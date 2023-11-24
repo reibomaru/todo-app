@@ -1,0 +1,75 @@
+@startuml todo
+
+package "RDB Schema" {
+
+  enum "role" {
+    viewer
+    editor
+  }
+
+  enum "publication_range" {
+    only_author
+    only_company
+  }
+
+  entity "companies" {
+    + id : uuid <<PK>>
+    ---
+    name : varchar
+    created_at : date
+    updated_at : date
+    deleted_at : date
+  }
+
+  entity "users" {
+    + id : uuid <<PK>>
+    ---
+    name : varchar
+    password : varchar
+    role : role
+    # company_id : uuid [FK(companies, id)]
+    created_at : date
+    updated_at : date
+    deleted_at : date
+  }
+
+  entity "task_assignments" {
+    + id : uuid <<PK>>
+    ---
+    # assignee_id : uuid [FK(users, id)]
+    # task_id : uuid [FK(tasks, id)]
+    created_at : date
+    updated_at : date
+    deleted_at : date
+  }
+
+  entity "task_status" {
+    + id : uuid <<PK>>
+    ---
+    status : varchar
+    theme_color : varchar
+    created_at : date
+    updated_at : date
+    deleted_at : date
+  }
+
+  entity "tasks" {
+    + id : int <<PK>>
+    ---
+    due : date
+    title : varchar
+    description : varchar
+    # status_id : uuid [FK(task_status, id)]
+    publication_range : publication_range
+    created_at : date
+    updated_at : date
+    deleted_at : date
+  }
+
+  users }o--|| companies
+  tasks }o--|| task_status
+  task_assignments }o--|| users
+  task_assignments }o--|| tasks
+}
+
+@enduml
