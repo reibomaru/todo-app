@@ -2,30 +2,34 @@ import {
   Grid,
   InputLabel,
   MenuItem,
+  Pagination,
   Select,
   SelectChangeEvent,
 } from "@mui/material";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import api from "~/apis/backend/api";
 import { SearchResult, Task, TaskStatus, User } from "~/apis/backend/gen";
 import HeaderLayout from "~/components/organisms/HeaderLayout";
 import TaskTable from "~/components/organisms/TaskTable";
 import { useUser } from "~/hooks/UserContext/helper";
+import { useUpdateQueryParam } from "~/hooks/navigate";
 
 const Tasks = () => {
   const location = useLocation();
-  const navigate = useNavigate();
+  const updateQueryParam = useUpdateQueryParam();
   const currParams = useMemo(() => {
     const params = new URLSearchParams(location.search);
     const assignee = params.get("assignee") || "";
     const status = params.get("status") || "";
     const sort = params.get("sort") || "";
-    return { assignee, status, sort };
+    const castedPage = Number(params.get("page"));
+    const page = isNaN(castedPage) ? castedPage : 1;
+    return { assignee, status, sort, page };
   }, [location.search]);
   const user = useUser();
   const [searchResult, setSearchResult] = useState<SearchResult>({
-    total_count: 0,
+    total_page_count: 0,
     result: [],
   });
   const [filterOptions, setFilterOptions] = useState<{
@@ -44,6 +48,7 @@ const Tasks = () => {
           currParams.assignee,
           currParams.status,
           currParams.sort,
+          currParams.page
         );
         setSearchResult(data);
       } catch (error) {
@@ -53,6 +58,7 @@ const Tasks = () => {
     })();
   }, [
     currParams.assignee,
+    currParams.page,
     currParams.sort,
     currParams.status,
     user.company.id,
@@ -63,7 +69,7 @@ const Tasks = () => {
       try {
         const { data: members } = await api.getMembers(user.company.id);
         const { data: taskStatusList } = await api.getTaskStatus(
-          user.company.id,
+          user.company.id
         );
         setFilterOptions({ members, taskStatusList });
       } catch (error) {
@@ -78,28 +84,24 @@ const Tasks = () => {
       switch (key) {
         case "created_at":
         case "due": {
-          const params = new URLSearchParams(location.search);
-          params.set("sort", key);
-          navigate(`${location.pathname}?${params.toString()}`);
+          updateQueryParam("sort", key);
           break;
         }
         default:
       }
     },
-    [location.pathname, location.search, navigate],
+    [updateQueryParam]
   );
 
   const handleChangeFilterOption = (event: SelectChangeEvent) => {
     const {
       target: { name, value },
     } = event;
-    const params = new URLSearchParams(location.search);
-    if (value) {
-      params.set(name, value);
-    } else {
-      params.delete(name);
-    }
-    navigate(`${location.pathname}?${params.toString()}`);
+    updateQueryParam(name, value);
+  };
+
+  const handleChangePage = (_: ChangeEvent<unknown>, value: number) => {
+    updateQueryParam("page", value.toString());
   };
 
   return (
@@ -151,6 +153,13 @@ const Tasks = () => {
             onClickHeader={handleHeaderClick}
           />
         </Grid>
+      </Grid>
+      <Grid item container justifyContent="center">
+        <Pagination
+          count={searchResult.total_page_count}
+          page={currParams.page}
+          onChange={handleChangePage}
+        />
       </Grid>
     </HeaderLayout>
   );
