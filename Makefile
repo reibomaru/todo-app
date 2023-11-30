@@ -14,7 +14,7 @@ $(FRONTEND_GEN_FILE): $(SCHEMA_YAML)
 	docker compose run openapi-generator generate -g typescript-axios -i /$(SCHEMA_YAML) -o /$(FRONTEND_GEN_DIR)
 
 $(BACKEND_GEN_FILE): $(SCHEMA_YAML) $(OAPI_CONFIG_YAML)
-	docker compose run --build backend oapi-codegen --config /$(OAPI_CONFIG_YAML) /$(SCHEMA_YAML)
+	docker compose run --build backend oapi-codegen -o /$(BACKEND_GEN_FILE) --config /$(OAPI_CONFIG_YAML) /$(SCHEMA_YAML)
 	docker compose run backend goimports -w ./
 
 ### openapi ###
