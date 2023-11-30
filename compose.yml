@@ -1,0 +1,61 @@
+version: '3'
+services:
+  db:
+    image: postgres:16.1
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: todo
+    ports:
+      - "5432:5432"
+
+  frontend:
+    build: frontend
+    ports:
+      - "3000:3000"
+    command: bash -c "pnpm install && pnpm dev"
+    volumes:
+      - type: bind
+        source: ./frontend/
+        target: /frontend/
+
+  backend:
+    build: backend
+    ports:
+      - "8080:8080"
+    command: bash -c " /scripts/wait-for-it.sh db:5432 --timeout=60 --strict && go run cmd/main.go"
+    volumes:
+      - type: bind
+        source: ./backend
+        target: /backend
+      - type: bind
+        source: ./openapi
+        target: /openapi
+      - type: bind
+        source: ./design_files
+        target: /design_files
+    depends_on:
+      - db
+  
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./design_files/openapi.yaml:/openapi.yaml
+    environment:
+      SWAGGER_JSON: /openapi.yaml
+
+  prism:
+    image: stoplight/prism:4
+    command: 'mock -h 0.0.0.0 /openapi.yaml'
+    volumes:
+      - ./design_files/openapi.yaml:/openapi.yaml
+    ports:
+      - '8080:4010'
+
+  openapi-generator:
+    image: openapitools/openapi-generator-cli
+    volumes:
+      - ./design_files/openapi.yaml:/design_files/openapi.yaml
+      - ./frontend/:/frontend/

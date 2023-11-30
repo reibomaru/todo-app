@@ -1,0 +1,6 @@
+package: controller
+generate:
+  gin-server: true
+  models: true
+  embedded-spec: true
+output: /backend/openapi.gen.go
