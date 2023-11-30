@@ -3,14 +3,14 @@ import {
   InputLabel,
   MenuItem,
   Pagination,
-  Select,
   SelectChangeEvent,
 } from "@mui/material";
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import api from "~/apis/backend/api";
-import { SearchResult, Task, TaskStatus, User } from "~/apis/backend/gen";
+import { SearchResult, Task } from "~/apis/backend/gen";
 import HeaderLayout from "~/components/organisms/HeaderLayout";
+import TaskItemSelect from "~/components/organisms/TaskItemSelect";
 import TaskTable from "~/components/organisms/TaskTable";
 import { useUser } from "~/hooks/UserContext/helper";
 import { useUpdateQueryParam } from "~/hooks/navigate";
@@ -31,13 +31,6 @@ const Tasks = () => {
   const [searchResult, setSearchResult] = useState<SearchResult>({
     total_page_count: 0,
     result: [],
-  });
-  const [filterOptions, setFilterOptions] = useState<{
-    members: User[];
-    taskStatusList: TaskStatus[];
-  }>({
-    members: [],
-    taskStatusList: [],
   });
 
   useEffect(() => {
@@ -64,21 +57,6 @@ const Tasks = () => {
     user.company.id,
   ]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { data: members } = await api.getMembers(user.company.id);
-        const { data: taskStatusList } = await api.getTaskStatus(
-          user.company.id
-        );
-        setFilterOptions({ members, taskStatusList });
-      } catch (error) {
-        console.error(error);
-        alert("フィルターの選択肢の取得に失敗");
-      }
-    })();
-  }, [user.company.id]);
-
   const handleHeaderClick = useCallback(
     (key: keyof Task) => {
       switch (key) {
@@ -93,7 +71,7 @@ const Tasks = () => {
     [updateQueryParam]
   );
 
-  const handleChangeFilterOption = (event: SelectChangeEvent) => {
+  const handleChangeFilterOption = (event: SelectChangeEvent<string>) => {
     const {
       target: { name, value },
     } = event;
@@ -113,37 +91,29 @@ const Tasks = () => {
         <Grid item container spacing={2}>
           <Grid item>
             <InputLabel>担当者</InputLabel>
-            <Select
+            <TaskItemSelect
               value={currParams.assignee}
               name="assignee"
               onChange={handleChangeFilterOption}
               displayEmpty
               sx={{ minWidth: 150 }}
+              selectType="members"
             >
-              {filterOptions.members.map((member) => (
-                <MenuItem key={member.id} value={member.name}>
-                  {member.name}
-                </MenuItem>
-              ))}
               <MenuItem value="">指定しない</MenuItem>
-            </Select>
+            </TaskItemSelect>
           </Grid>
           <Grid item>
             <InputLabel>ステータス</InputLabel>
-            <Select
+            <TaskItemSelect
               value={currParams.status}
               name="status"
               onChange={handleChangeFilterOption}
               displayEmpty
               sx={{ minWidth: 150 }}
+              selectType="status"
             >
-              {filterOptions.taskStatusList.map((status) => (
-                <MenuItem key={status.id} value={status.name}>
-                  {status.name}
-                </MenuItem>
-              ))}
               <MenuItem value="">指定しない</MenuItem>
-            </Select>
+            </TaskItemSelect>
           </Grid>
         </Grid>
         <Grid item>

@@ -8,7 +8,7 @@ export const useUpdateQueryParam = () => {
   const location = useLocation();
   return (param: string, value: string) => {
     const params = new URLSearchParams(location.search);
-    if (param) {
+    if (value) {
       params.set(param, value);
     } else {
       params.delete(param);
