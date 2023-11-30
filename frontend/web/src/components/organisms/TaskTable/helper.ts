@@ -16,7 +16,7 @@ export const headers: Header[] = [
     value: "ステータス",
   },
   {
-    key: "pubclication_range",
+    key: "publication_range",
     value: "公開範囲",
   },
   {

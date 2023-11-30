@@ -8,16 +8,18 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { Task } from "~/apis/backend/gen";
 import { headers } from "./helper";
 import { memo } from "react";
+import { useUser } from "~/hooks/UserContext/helper";
 
 const taskEntryToView = (task: Task, key: keyof Task) => {
   switch (key) {
     case "title":
     case "due":
     case "created_at":
-    case "pubclication_range":
+    case "publication_range":
       return <p>{task[key]}</p>;
     case "status":
       return <p>{task[key].name}</p>;
@@ -39,6 +41,8 @@ type Props = {
 };
 
 const TaskTable = memo(({ tasks, currentSortKey, onClickHeader }: Props) => {
+  const navigate = useNavigate();
+  const user = useUser();
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -60,7 +64,12 @@ const TaskTable = memo(({ tasks, currentSortKey, onClickHeader }: Props) => {
         </TableHead>
         <TableBody>
           {tasks.map((task) => (
-            <TableRow key={task.id}>
+            <TableRow
+              key={task.id}
+              onClick={() => {
+                navigate(`/${user.company.id}/tasks/${task.id}`);
+              }}
+            >
               {headers.map(({ key }) => {
                 return (
                   <TableCell key={key}>{taskEntryToView(task, key)}</TableCell>
