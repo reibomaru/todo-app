@@ -1,0 +1,397 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: todo API
+  description: >-
+    API schema of backend server for todo app
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/signin:
+    post:
+      description: request the server for authentication
+      requestBody:
+        description: user info to sign in
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignInRequestBody"
+      operationId: sign-in
+      responses:
+        "200":
+          description: response when succeeded signing in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerMessage"
+        "400":
+          description: response when failed signig in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerMessage"
+  /api/companies/{company_id}/members:
+    parameters:
+      - name: company_id
+        in: path
+        description: id of company in which search for members
+        required: true
+        schema:
+          type: string
+        example: "5370409e-a00c-4e97-b1e9-0906dbec066a"
+    get:
+      description: request for getting
+      responses:
+        "200":
+          description: response when succeeded
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+      operationId: get-members
+  /api/users/me:
+    get:
+      description: request server for getting user info with session
+      responses:
+        "200":
+          description: response with valid session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: response when failed getting user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServerMessage"
+      operationId: get-my-account
+  /api/signout:
+    post:
+      description: request for signing out
+      responses:
+        "200":
+          description: response when success
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ServerMessage"
+      operationId: sign-out
+  /api/companies/{company_id}/tasks:
+    parameters:
+      - name: company_id
+        in: path
+        description: id of company in which search for members
+        required: true
+        schema:
+          type: string
+        example: "5370409e-a00c-4e97-b1e9-0906dbec066a"
+    post:
+      description: creating task
+      requestBody:
+        description: task content
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: "#/components/schemas/TaskRequestBody"
+      operationId: create-task
+      responses:
+        "200":
+          description: response when succeeded creating
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ServerMessage"
+  /api/companies/{company_id}/tasks/{task_id}:
+    parameters:
+      - name: company_id
+        in: path
+        description: id of company in which search for members
+        required: true
+        schema:
+          type: string
+        example: "5370409e-a00c-4e97-b1e9-0906dbec066a"
+      - name: task_id
+        in: path
+        description: id of task to find
+        required: true
+        schema:
+          type: string
+        example: "5370409e-a00c-4e97-b1e9-0906dbec066a"
+    get:
+      description: request for getting task by id
+      responses:
+        "200":
+          description: response when succeeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+      operationId: get-task
+    patch:
+      description: request for updating task
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskRequestBody"
+      operationId: update-task
+      responses:
+        "200":
+          description: response when succeeded
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ServerMessage"
+    delete:
+      description: request for deleting task
+      responses:
+        "200":
+          description: response when succeeded
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/ServerMessage"
+      operationId: delete-task
+  /api/companies/{company_id}/search:
+    parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: string
+        example: "5370409e-a00c-4e97-b1e9-0906dbec066a"
+    get:
+      description: search tasks by condtion with query
+      parameters:
+        - in: query
+          name: assignee
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: string
+        - in: query
+          name: sort
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: number
+      responses:
+        "200":
+          description: response when succeeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResult"
+      operationId: search-task
+  /api/companies/{company_id}/task-status:
+    parameters:
+      - name: company_id
+        in: path
+        required: true
+        schema:
+          type: string
+        example: "5370409e-a00c-4e97-b1e9-0906dbec066a"
+    get:
+      responses:
+        "200":
+          description: response when succeeded
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskStatus"
+                example:
+                  [
+                    {
+                      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+                      "name": "ToDo",
+                      "created_at": "string",
+                      "updated_at": "string",
+                    },
+                    {
+                      "id": "497f6eca-6276-5678-bfeb-53cbbbba6f08",
+                      "name": "DONE",
+                      "created_at": "string",
+                      "updated_at": "string",
+                    },
+                  ]
+      operationId: get-task-status
+components:
+  schemas:
+    Company:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "5370409e-a00c-4e97-b1e9-0906dbec066a"
+        name:
+          type: string
+          example: "sample.inc"
+    User:
+      type: "object"
+      required:
+        - id
+        - name
+        - email
+        - company
+      properties:
+        id:
+          type: "string"
+          format: uuid
+          example: "5370409e-a00c-4e97-b1e9-0906dbec066a"
+        name:
+          type: "string"
+          example: "Taro"
+        email:
+          type: "string"
+          format: email
+        company:
+          $ref: "#/components/schemas/Company"
+    Task:
+      type: object
+      required:
+        - id
+        - company
+        - author
+        - assignees
+        - due
+        - title
+        - description
+        - publication_range
+        - status
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        company:
+          $ref: "#/components/schemas/Company"
+        author:
+          $ref: "#/components/schemas/User"
+        assignees:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+        due:
+          type: string
+          format: date
+        title:
+          type: string
+          example: 設計書の作成
+        description:
+          type: string
+          example: ER図とUMLの作成
+        publication_range:
+          type: string
+          enum:
+            - only_author
+            - only_company
+        status:
+          $ref: "#/components/schemas/TaskStatus"
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime
+    TaskStatus:
+      type: object
+      required:
+        - id
+        - name
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          example: ToDo
+        created_at:
+          type: string
+          format: datetime
+        updated_at:
+          type: string
+          format: datetime
+    SearchResult:
+      type: object
+      required:
+        - result
+        - total_page_count
+      properties:
+        result:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        total_page_count:
+          type: number
+          description: すべての検索結果の件数
+    SignInRequestBody:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    TaskRequestBody:
+      type: object
+      properties:
+        assigneeIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+        due:
+          type: string
+          format: date
+        title:
+          type: string
+          example: 設計書の作成
+        description:
+          type: string
+          example: ER図とUMLの作成
+        publication_range:
+          type: string
+          enum:
+            - only_author
+            - only_company
+        statusId:
+          type: string
+          format: uuid
+    ServerMessage:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          example: "OK"
+
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"

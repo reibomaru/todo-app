@@ -46,8 +46,7 @@ package "RDB Schema" {
   entity "task_status" {
     + id : uuid <<PK>>
     ---
-    status : varchar
-    theme_color : varchar
+    name : varchar
     created_at : date
     updated_at : date
     deleted_at : date
@@ -59,6 +58,8 @@ package "RDB Schema" {
     due : date
     title : varchar
     description : varchar
+    # company_id : uuid [FK(companies, id)]
+    # author_id : uuid [FK(users, id)]
     # status_id : uuid [FK(task_status, id)]
     publication_range : publication_range
     created_at : date
@@ -67,7 +68,9 @@ package "RDB Schema" {
   }
 
   users }o--|| companies
+  tasks }o--|| companies
   tasks }o--|| task_status
+  users ||--o{ tasks
   task_assignments }o--|| users
   task_assignments }o--|| tasks
 }
