@@ -2,6 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import api from "~/apis/backend/api";
 import { userContext } from "./helper";
 import { User } from "~/apis/backend/gen";
+import { Link } from "react-router-dom";
 
 type Props = {
   children: ReactNode;
@@ -32,7 +33,9 @@ const UserProvider = ({ children }: Props) => {
       {user ? (
         <userContext.Provider value={user}>{children}</userContext.Provider>
       ) : (
-        <div>ログインしてください</div>
+        <div>
+          <Link to="/signin">こちら</Link>からログインしてください
+        </div>
       )}
     </>
   );
