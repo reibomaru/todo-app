@@ -1,17 +1,18 @@
 import { RouterProvider } from "react-router-dom";
-import CssBaseline from "@mui/material/CssBaseline";
 import router from "~/router";
 import UserProvider from "~/hooks/UserContext";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const App = () => {
   return (
-    <CssBaseline>
-      <div style={{ minHeight: "100vh" }}>
+    <div style={{ minHeight: "100vh" }}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
         <UserProvider>
           <RouterProvider router={router} />
         </UserProvider>
-      </div>
-    </CssBaseline>
+      </LocalizationProvider>
+    </div>
   );
 };
 

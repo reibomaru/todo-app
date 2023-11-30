@@ -14,7 +14,14 @@ const HeaderLayout = ({ children }: Props) => {
     <>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography
+            onClick={() => {
+              navigate("/");
+            }}
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 1, cursor: "pointer" }}
+          >
             Todo APP
           </Typography>
           {user ? (
