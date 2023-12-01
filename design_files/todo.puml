@@ -27,6 +27,7 @@ package "RDB Schema" {
     name : varchar
     password : varchar
     role : role
+    email : varchar
     # company_id : uuid [FK(companies, id)]
     created_at : date
     updated_at : date
@@ -53,7 +54,7 @@ package "RDB Schema" {
   }
 
   entity "tasks" {
-    + id : int <<PK>>
+    + id : uuid <<PK>>
     ---
     due : date
     title : varchar

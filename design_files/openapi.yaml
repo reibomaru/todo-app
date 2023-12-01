@@ -5,7 +5,7 @@ info:
   description: >-
     API schema of backend server for todo app
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:8000
 paths:
   /api/signin:
     post:
