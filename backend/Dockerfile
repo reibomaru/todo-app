@@ -14,6 +14,9 @@ RUN golangci-lint --version
 # install oapi-codegen
 RUN go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 
+# install air
+RUN go install github.com/cosmtrek/air@latest
+
 RUN mkdir /scripts \
     && wget 'https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh' -P /scripts  \
     && chmod 755 /scripts/wait-for-it.sh
