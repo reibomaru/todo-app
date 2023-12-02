@@ -50,8 +50,8 @@ func main() {
 	// }
 	// r.Use(middleware.OapiRequestValidator(swagger))
 
-	models := model.NewModels(db)
-	services := service.NewServices(models)
+	model := model.NewModel(db)
+	services := service.NewServices(model, db)
 	handlers := controller.NewHandlers(services)
 	controller.RegisterHandlers(r, handlers)
 
