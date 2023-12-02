@@ -16,56 +16,48 @@ CREATE TYPE publication_range AS ENUM ('only_author', 'only_company');
 
 -- Companies Table
 CREATE TABLE companies (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR UNIQUE NOT NULL,
-    created_at DATE NOT NULL,
-    updated_at DATE NOT NULL,
-    deleted_at DATE
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
 
 -- Users Table
 CREATE TABLE users (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(50) NOT NULL,
     email VARCHAR(200) UNIQUE NOT NULL,
     password VARCHAR(64) NOT NULL,
     role role NOT NULL,
     company_id UUID NOT NULL REFERENCES companies(id),
-    created_at DATE NOT NULL,
-    updated_at DATE NOT NULL,
-    deleted_at DATE
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
 
 -- Task Status Table
 CREATE TABLE task_status (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(50) UNIQUE NOT NULL,
-    created_at DATE NOT NULL,
-    updated_at DATE NOT NULL,
-    deleted_at DATE
+    company_id UUID NOT NULL REFERENCES companies(id),
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE
 );
 
 -- Tasks Table
 CREATE TABLE tasks (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     due DATE NOT NULL,
     title VARCHAR(50),
     description text NOT NULL,
     company_id UUID NOT NULL REFERENCES companies(id),
     author_id UUID NOT NULL REFERENCES users(id),
+    assignee_id UUID NOT NULL REFERENCES users(id),
     status_id UUID NOT NULL REFERENCES task_status(id),
     publication_range publication_range NOT NULL,
-    created_at DATE NOT NULL,
-    updated_at DATE NOT NULL,
-    deleted_at DATE
-);
-
--- Task Assignments Table
-CREATE TABLE task_assignments (
-    id UUID PRIMARY KEY,
-    assignee_id UUID NOT NULL REFERENCES users(id),
-    task_id UUID NOT NULL REFERENCES tasks(id),
-    created_at DATE NOT NULL,
-    updated_at DATE NOT NULL,
-    deleted_at DATE
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    deleted_at TIMESTAMP WITH TIME ZONE
 );

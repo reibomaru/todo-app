@@ -34,20 +34,11 @@ package "RDB Schema" {
     deleted_at : date
   }
 
-  entity "task_assignments" {
-    + id : uuid <<PK>>
-    ---
-    # assignee_id : uuid [FK(users, id)]
-    # task_id : uuid [FK(tasks, id)]
-    created_at : date
-    updated_at : date
-    deleted_at : date
-  }
-
   entity "task_status" {
     + id : uuid <<PK>>
     ---
     name : varchar
+    company_id : uuid [FK(companies, id)]
     created_at : date
     updated_at : date
     deleted_at : date
@@ -62,6 +53,7 @@ package "RDB Schema" {
     # company_id : uuid [FK(companies, id)]
     # author_id : uuid [FK(users, id)]
     # status_id : uuid [FK(task_status, id)]
+    # assignee_id : uuid [FK(users, id)]
     publication_range : publication_range
     created_at : date
     updated_at : date
