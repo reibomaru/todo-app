@@ -1,12 +1,7 @@
 import { DefaultApi, SignInRequestBody } from "~/apis/backend/gen/api";
 import isEmail from "validator/lib/isEmail";
-import { Configuration } from "./gen";
 
-const config = new Configuration({
-  basePath: "http://localhost:8080",
-});
-
-const api = new DefaultApi(config);
+const api = new DefaultApi();
 
 const isValidPassword = (password: string) => {
   // 最低8文字の長さの要件

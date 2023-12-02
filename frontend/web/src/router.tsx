@@ -8,11 +8,7 @@ import UserProvider from "./hooks/UserContext";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <UserProvider>
-        <Top />
-      </UserProvider>
-    ),
+    element: <Top />,
   },
   {
     path: ":companyId/tasks",
@@ -32,11 +28,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/signin",
-    element: (
-      <UserProvider>
-        <SignIn />
-      </UserProvider>
-    ),
+    element: <SignIn />,
   },
 ]);
 
