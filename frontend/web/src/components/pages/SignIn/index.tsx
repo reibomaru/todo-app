@@ -3,6 +3,8 @@ import { useCallback, useMemo, useState } from "react";
 import api, { validateSignInRequestBody } from "~/apis/backend/api";
 import { SignInRequestBody } from "~/apis/backend/gen";
 import HeaderLayout from "~/components/organisms/HeaderLayout";
+import sha256 from "crypto-js/sha256";
+import { useOptionalUser } from "~/hooks/OptionalUserContext/helper";
 
 const SignIn = () => {
   const [form, setForm] = useState<SignInRequestBody>({
@@ -21,6 +23,7 @@ const SignIn = () => {
     }
     return true;
   }, [errorMessages, form]);
+  const { fetchUser } = useOptionalUser();
 
   const onChangeForm = useCallback<React.ChangeEventHandler<HTMLInputElement>>(
     (event) => {
@@ -37,12 +40,16 @@ const SignIn = () => {
       return;
     }
     try {
-      await api.signIn(form);
+      await api.signIn({
+        email: form.email,
+        password: sha256(form.password).toString(),
+      });
+      await fetchUser();
     } catch (error) {
       alert("ログインに失敗しました");
       return;
     }
-  }, [form, isValidForm]);
+  }, [fetchUser, form.email, form.password, isValidForm]);
 
   return (
     <HeaderLayout>
