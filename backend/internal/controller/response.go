@@ -6,15 +6,24 @@ import (
 )
 
 func NewCompany(c model.Company) Company {
-	return Company{Id: c.ID, Name: c.Name}
+	return Company{Id: c.ID,
+		Name: c.Name}
 }
 
 func NewUser(u model.User) User {
-	return User{Id: u.ID, Name: u.Name, Company: NewCompany(u.Company), Email: types.Email(u.Email)}
+	return User{
+		Id:      u.ID,
+		Name:    u.Name,
+		Company: NewCompany(u.Company),
+		Email:   types.Email(u.Email),
+		Role:    UserRole(u.Role)}
 }
 
 func NewTaskStatus(ts model.TaskStatus) TaskStatus {
-	return TaskStatus{Id: ts.ID, Name: ts.Name, UpdatedAt: ts.UpdatedAt.String(), CreatedAt: ts.CreatedAt.String()}
+	return TaskStatus{Id: ts.ID,
+		Name:      ts.Name,
+		UpdatedAt: ts.UpdatedAt.String(),
+		CreatedAt: ts.CreatedAt.String()}
 }
 
 func NewTask(t model.Task) Task {

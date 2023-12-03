@@ -7,6 +7,14 @@ import (
 	"gorm.io/gorm"
 )
 
+type UserRole string
+
+// Defines values for UserRole.
+const (
+	Editor UserRole = "editor"
+	Viewer UserRole = "viewer"
+)
+
 type User struct {
 	ModelBase
 	ID        uuid.UUID `gorm:"primary_key"`
@@ -14,6 +22,7 @@ type User struct {
 	Email     string
 	CompanyID uuid.UUID
 	Company   Company
+	Role      UserRole
 	Tasks     []Task `gorm:"many2many:task_assignments;joinReferences:AssigneeId"`
 }
 

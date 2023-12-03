@@ -248,6 +248,7 @@ components:
         - name
         - email
         - company
+        - role
       properties:
         id:
           type: "string"
@@ -259,6 +260,11 @@ components:
         email:
           type: "string"
           format: email
+        role:
+          type: "string"
+          enum:
+            - editor
+            - viewer
         company:
           $ref: "#/components/schemas/Company"
     Task:
