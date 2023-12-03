@@ -82,13 +82,16 @@ func (h Handler) CreateTask(c *gin.Context, companyId string) {
 		})
 		return
 	}
-	fmt.Println(taskReqBody)
+	var due time.Time
+	if taskReqBody.Due != nil {
+		due = taskReqBody.Due.Time
+	}
 	authorID, _ := uuid.Parse("72284d80-fc37-4fce-9990-d06816f154e3")
 	if err = h.services.CreateTask(&model.CreateTaskPayload{
 		CompanyID:        *taskReqBody.CompanyId,
 		AssigeeID:        *taskReqBody.AssigneeId,
 		AuthorID:         authorID,
-		Due:              taskReqBody.Due.Time,
+		Due:              due,
 		Title:            *taskReqBody.Title,
 		Description:      *taskReqBody.Description,
 		PublicationRange: model.TaskPublicationRange(*taskReqBody.PublicationRange),
