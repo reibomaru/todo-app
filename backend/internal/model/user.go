@@ -37,8 +37,10 @@ func (m Model) FindUsersByCompanyID(conn *gorm.DB, companyID uuid.UUID) ([]*User
 }
 
 func (m Model) FindUserByID(conn *gorm.DB, userID uuid.UUID) (*User, error) {
-	var user *User
-	err := conn.Joins("Company").First(&user).Error
+	user := &User{
+		ID: userID,
+	}
+	err := conn.Joins("Company").First(user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +50,7 @@ func (m Model) FindUserByID(conn *gorm.DB, userID uuid.UUID) (*User, error) {
 
 func (m Model) FindUserByEmailAndPassword(conn *gorm.DB, email string, password string) (*User, error) {
 	user := &User{}
-	if err := conn.Where("email = ?", email).Where("password = ?", password).First(user).Error; err != nil {
+	if err := conn.Where("email = ? AND password = ?", email, password).First(user).Error; err != nil {
 		return nil, err
 	}
 	return user, nil
