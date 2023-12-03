@@ -1,5 +1,5 @@
-import { Button, Grid, Typography } from "@mui/material";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Button, Grid, InputBase, Typography } from "@mui/material";
+import { useCallback, useState } from "react";
 import api from "~/apis/backend/api";
 import { useUser } from "~/hooks/UserContext/helper";
 
@@ -13,15 +13,7 @@ type Prop = {
 const TaskTitleForm = ({ title, taskId, onUpdateForm, onlyView }: Prop) => {
   const [input, setInput] = useState(title);
   const [isEditing, setIsEditing] = useState(false);
-  const [typographyClassName, setTypographyClassName] = useState("");
   const user = useUser();
-  const ref = useRef<HTMLHeadingElement>(null);
-
-  useEffect(() => {
-    if (ref.current) {
-      setTypographyClassName(ref.current.className);
-    }
-  }, [ref]);
 
   const updateTitle = useCallback(async () => {
     if (input === "") {
@@ -39,13 +31,13 @@ const TaskTitleForm = ({ title, taskId, onUpdateForm, onlyView }: Prop) => {
       {isEditing ? (
         <>
           <Grid item>
-            <input
+            <InputBase
               style={{ border: "none" }}
-              className={typographyClassName}
               defaultValue={title}
               onChange={(event) => {
                 setInput(event.target.value);
               }}
+              sx={{ typography: "h4" }}
             />
           </Grid>
           <Grid item>
@@ -67,7 +59,7 @@ const TaskTitleForm = ({ title, taskId, onUpdateForm, onlyView }: Prop) => {
       ) : (
         <>
           <Grid item>
-            <Typography ref={ref} variant="h4" component="h1">
+            <Typography variant="h4" component="h1">
               {title}
             </Typography>
           </Grid>
