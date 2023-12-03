@@ -40,12 +40,15 @@ const HeaderLayout = ({ children }: Props) => {
           </Typography>
           {user ? (
             <>
-              <Button
-                onClick={() => navigate(`/${user.company.id}/tasks/new`)}
-                color="inherit"
-              >
-                新規作成
-              </Button>
+              {user.role === "editor" && (
+                <Button
+                  onClick={() => navigate(`/${user.company.id}/tasks/new`)}
+                  color="inherit"
+                >
+                  新規作成
+                </Button>
+              )}
+
               <Button
                 onClick={() =>
                   navigate(`/${user.company.id}/tasks?assignee=${user.name}`)

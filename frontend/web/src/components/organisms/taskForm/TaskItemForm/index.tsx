@@ -13,6 +13,7 @@ type Props = {
   displayValue: ReactNode;
   value: string;
   itemKey: keyof TaskRequestBody;
+  onlyView: boolean;
   onUpdateForm?: () => void | Promise<void>;
 };
 
@@ -22,6 +23,7 @@ const TaskItemForm = ({
   displayValue,
   value,
   itemKey,
+  onlyView,
   onUpdateForm = () => {},
 }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -112,7 +114,7 @@ const TaskItemForm = ({
         <Typography variant="h6" component="h3" sx={{ marginRight: 1 }}>
           {label}
         </Typography>
-        {isEditing ? (
+        {isEditing || onlyView ? (
           <></>
         ) : (
           <Button

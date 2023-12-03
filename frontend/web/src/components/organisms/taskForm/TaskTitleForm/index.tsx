@@ -6,10 +6,11 @@ import { useUser } from "~/hooks/UserContext/helper";
 type Prop = {
   title: string;
   taskId: string;
+  onlyView: boolean;
   onUpdateForm: () => Promise<void> | void;
 };
 
-const TaskTitleForm = ({ title, taskId, onUpdateForm }: Prop) => {
+const TaskTitleForm = ({ title, taskId, onUpdateForm, onlyView }: Prop) => {
   const [input, setInput] = useState(title);
   const [isEditing, setIsEditing] = useState(false);
   const [typographyClassName, setTypographyClassName] = useState("");
@@ -70,16 +71,18 @@ const TaskTitleForm = ({ title, taskId, onUpdateForm }: Prop) => {
               {title}
             </Typography>
           </Grid>
-          <Grid item>
-            <Button
-              onClick={() => {
-                setIsEditing(true);
-              }}
-              variant="outlined"
-            >
-              編集
-            </Button>
-          </Grid>
+          {onlyView || (
+            <Grid item>
+              <Button
+                onClick={() => {
+                  setIsEditing(true);
+                }}
+                variant="outlined"
+              >
+                編集
+              </Button>
+            </Grid>
+          )}
         </>
       )}
     </Grid>

@@ -5,10 +5,12 @@ import api from "~/apis/backend/api";
 import { Task } from "~/apis/backend/gen";
 import HeaderLayout from "~/components/organisms/HeaderLayout";
 import TaskForms from "~/components/organisms/taskForm/TaskForms";
+import { useUser } from "~/hooks/UserContext/helper";
 
 const TaskPage = () => {
   const [task, setTask] = useState<Task | null>(null);
   const { companyId, taskId } = useParams();
+  const user = useUser();
 
   const fetchTask = useCallback(async () => {
     if (!companyId || !taskId) {
@@ -28,7 +30,13 @@ const TaskPage = () => {
   return (
     <HeaderLayout>
       <Grid container direction="column" sx={{ padding: 5 }}>
-        {task && <TaskForms task={task} fetchTask={fetchTask} />}
+        {task && (
+          <TaskForms
+            onlyView={user.role !== "editor"}
+            task={task}
+            fetchTask={fetchTask}
+          />
+        )}
       </Grid>
     </HeaderLayout>
   );

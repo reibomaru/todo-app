@@ -18,6 +18,7 @@ const OptionalUserProvider = ({ children }: Props) => {
         email: data.email,
         name: data.name,
         company: data.company,
+        role: data.role,
       });
     } catch (error) {
       console.error(error);

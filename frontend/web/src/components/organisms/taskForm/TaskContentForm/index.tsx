@@ -7,10 +7,16 @@ import TextareaAutosize from "react-textarea-autosize";
 type Props = {
   description: string;
   taskId: string;
+  onlyView: boolean;
   onUpdateForm: () => Promise<void> | void;
 };
 
-const TaskContentForm = ({ description, taskId, onUpdateForm }: Props) => {
+const TaskContentForm = ({
+  description,
+  taskId,
+  onUpdateForm,
+  onlyView,
+}: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [input, setInput] = useState(description);
   const [typographyClassName, setTypographyClassName] = useState("");
@@ -32,33 +38,35 @@ const TaskContentForm = ({ description, taskId, onUpdateForm }: Props) => {
   }, [input, onUpdateForm, taskId, user.company.id]);
   return (
     <Grid item container direction="column" spacing={2}>
-      <Grid item container direction="row">
-        {isEditing ? (
-          <>
-            <Button variant="contained" onClick={updateDescrption}>
-              保存
-            </Button>
+      {onlyView || (
+        <Grid item container direction="row">
+          {isEditing ? (
+            <>
+              <Button variant="contained" onClick={updateDescrption}>
+                保存
+              </Button>
+              <Button
+                variant="text"
+                onClick={() => {
+                  setIsEditing(false);
+                }}
+                sx={{ marginLeft: 2 }}
+              >
+                キャンセル
+              </Button>
+            </>
+          ) : (
             <Button
-              variant="text"
+              variant="outlined"
               onClick={() => {
-                setIsEditing(false);
+                setIsEditing(true);
               }}
-              sx={{ marginLeft: 2 }}
             >
-              キャンセル
+              編集
             </Button>
-          </>
-        ) : (
-          <Button
-            variant="outlined"
-            onClick={() => {
-              setIsEditing(true);
-            }}
-          >
-            編集
-          </Button>
-        )}
-      </Grid>
+          )}
+        </Grid>
+      )}
       <Grid item>
         {isEditing ? (
           <TextareaAutosize

@@ -9,9 +9,10 @@ import dayjs from "dayjs";
 type Props = {
   task: Task;
   fetchTask: () => void | Promise<void>;
+  onlyView: boolean;
 };
 
-const TaskForms = ({ task, fetchTask }: Props) => {
+const TaskForms = ({ task, fetchTask, onlyView }: Props) => {
   return (
     <Grid container direction="column">
       <Grid item>
@@ -19,6 +20,7 @@ const TaskForms = ({ task, fetchTask }: Props) => {
           title={task.title}
           taskId={task.id}
           onUpdateForm={fetchTask}
+          onlyView={onlyView}
         />
         <hr />
       </Grid>
@@ -28,6 +30,7 @@ const TaskForms = ({ task, fetchTask }: Props) => {
             description={task.description}
             taskId={task.id}
             onUpdateForm={fetchTask}
+            onlyView={onlyView}
           />
         </Grid>
         <Grid item xs={4} container direction="column" spacing={2}>
@@ -38,6 +41,7 @@ const TaskForms = ({ task, fetchTask }: Props) => {
             value={task.due}
             displayValue={task.due}
             onUpdateForm={fetchTask}
+            onlyView={onlyView}
           />
           <TaskItemForm
             taskId={task.id}
@@ -46,6 +50,7 @@ const TaskForms = ({ task, fetchTask }: Props) => {
             displayValue={task.assignee.name}
             value={task.assignee.id}
             onUpdateForm={fetchTask}
+            onlyView={onlyView}
           />
           <TaskItemForm
             taskId={task.id}
@@ -54,6 +59,7 @@ const TaskForms = ({ task, fetchTask }: Props) => {
             displayValue={<Chip label={task.status.name} />}
             value={task.status.id}
             onUpdateForm={fetchTask}
+            onlyView={onlyView}
           />
           <TaskItemForm
             taskId={task.id}
@@ -62,6 +68,7 @@ const TaskForms = ({ task, fetchTask }: Props) => {
             displayValue={task.publication_range}
             value={task.publication_range}
             onUpdateForm={fetchTask}
+            onlyView={onlyView}
           />
           <TaskItem label="作成者" displayValue={task.author.name} />
           <TaskItem
