@@ -23,6 +23,10 @@ const TaskTitleForm = ({ title, taskId, onUpdateForm }: Prop) => {
   }, [ref]);
 
   const updateTitle = useCallback(async () => {
+    if (input === "") {
+      alert("タイトルを１文字以上入力してください");
+      return;
+    }
     await api.updateTask(user.company.id, taskId, {
       title: input,
     });
