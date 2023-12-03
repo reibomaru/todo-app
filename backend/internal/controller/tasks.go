@@ -172,7 +172,7 @@ func (h Handler) UpdateTask(c *gin.Context, companyId string, taskId string) {
 		due = &taskReqBody.Due.Time
 	}
 	if err = h.services.UpdateTask(taskUUID, &model.UpdateTaskPayload{
-		AssigeeID:        taskReqBody.AssigneeId,
+		AssigneeID:       taskReqBody.AssigneeId,
 		Due:              due,
 		Title:            taskReqBody.Title,
 		Description:      taskReqBody.Description,

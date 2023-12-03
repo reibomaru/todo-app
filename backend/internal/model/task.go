@@ -40,7 +40,7 @@ type CreateTaskPayload struct {
 }
 
 type UpdateTaskPayload struct {
-	AssigeeID        *uuid.UUID
+	AssigneeID       *uuid.UUID
 	Due              *time.Time
 	Title            *string
 	Description      *string
@@ -103,10 +103,10 @@ func (m Model) FindTasksByQuery(conn *gorm.DB, companyID uuid.UUID, assigneeName
 	var tasks []*Task
 	var count int64
 	whereConditions := make(map[string]string)
-	if assigneeName != nil {
+	if assigneeName != nil && *assigneeName != "" {
 		whereConditions["Assignee.name"] = *assigneeName
 	}
-	if statusName != nil {
+	if statusName != nil && *statusName != "" {
 		whereConditions["Status.name"] = *statusName
 	}
 	whereConditions["Company.id"] = companyID.String()
