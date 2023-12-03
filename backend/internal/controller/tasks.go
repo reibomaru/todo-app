@@ -83,7 +83,15 @@ func (h Handler) GetTaskStatus(c *gin.Context, companyId string) {
 
 // (POST /api/companies/{company_id}/tasks)
 func (h Handler) CreateTask(c *gin.Context, companyId string) {
-	_, err := uuid.Parse(companyId)
+	session := sessions.Default(c)
+	userID, ok := session.Get("userID").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, ServerMessage{
+			Message: "invalid id",
+		})
+		return
+	}
+	userUUID, err := uuid.Parse(userID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ServerMessage{
 			Message: "invalid id",
@@ -101,11 +109,10 @@ func (h Handler) CreateTask(c *gin.Context, companyId string) {
 	if taskReqBody.Due != nil {
 		due = taskReqBody.Due.Time
 	}
-	authorID, _ := uuid.Parse("72284d80-fc37-4fce-9990-d06816f154e3")
-	if err = h.services.CreateTask(&model.CreateTaskPayload{
+	if err = h.services.CreateTask(userUUID, &model.CreateTaskPayload{
 		CompanyID:        *taskReqBody.CompanyId,
 		AssigeeID:        *taskReqBody.AssigneeId,
-		AuthorID:         authorID,
+		AuthorID:         userUUID,
 		Due:              due,
 		Title:            *taskReqBody.Title,
 		Description:      *taskReqBody.Description,
@@ -124,6 +131,21 @@ func (h Handler) CreateTask(c *gin.Context, companyId string) {
 
 // (DELETE /api/companies/{company_id}/tasks/{task_id})
 func (h Handler) DeleteTask(c *gin.Context, companyId string, taskId string) {
+	session := sessions.Default(c)
+	userID, ok := session.Get("userID").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, ServerMessage{
+			Message: "invalid id",
+		})
+		return
+	}
+	userUUID, err := uuid.Parse(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, ServerMessage{
+			Message: "invalid id",
+		})
+		return
+	}
 	taskUUID, err := uuid.Parse(taskId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ServerMessage{
@@ -131,7 +153,7 @@ func (h Handler) DeleteTask(c *gin.Context, companyId string, taskId string) {
 		})
 		return
 	}
-	if err = h.services.DeleteTask(taskUUID); err != nil {
+	if err = h.services.DeleteTask(userUUID, taskUUID); err != nil {
 		c.JSON(http.StatusInternalServerError, ServerMessage{
 			Message: "failed deleting task...",
 		})
@@ -159,13 +181,6 @@ func (h Handler) GetTask(c *gin.Context, companyId string, taskId string) {
 		})
 		return
 	}
-	companyUUID, err := uuid.Parse(companyId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, ServerMessage{
-			Message: "invalid id",
-		})
-		return
-	}
 	taskUUID, err := uuid.Parse(taskId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ServerMessage{
@@ -173,7 +188,7 @@ func (h Handler) GetTask(c *gin.Context, companyId string, taskId string) {
 		})
 		return
 	}
-	task, err := h.services.FindTaskByID(companyUUID, userUUID, taskUUID)
+	task, err := h.services.FindTaskByID(userUUID, taskUUID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, ServerMessage{
 			Message: fmt.Sprintf("not found task id: %v", taskUUID),
@@ -185,6 +200,21 @@ func (h Handler) GetTask(c *gin.Context, companyId string, taskId string) {
 
 // (PATCH /api/companies/{company_id}/tasks/{task_id})
 func (h Handler) UpdateTask(c *gin.Context, companyId string, taskId string) {
+	session := sessions.Default(c)
+	userID, ok := session.Get("userID").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, ServerMessage{
+			Message: "invalid id",
+		})
+		return
+	}
+	userUUID, err := uuid.Parse(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, ServerMessage{
+			Message: "invalid id",
+		})
+		return
+	}
 	taskUUID, err := uuid.Parse(taskId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ServerMessage{
@@ -203,7 +233,7 @@ func (h Handler) UpdateTask(c *gin.Context, companyId string, taskId string) {
 	if taskReqBody.Due != nil {
 		due = &taskReqBody.Due.Time
 	}
-	if err = h.services.UpdateTask(taskUUID, &model.UpdateTaskPayload{
+	if err = h.services.UpdateTask(userUUID, taskUUID, &model.UpdateTaskPayload{
 		AssigneeID:       taskReqBody.AssigneeId,
 		Due:              due,
 		Title:            taskReqBody.Title,

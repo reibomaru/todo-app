@@ -67,7 +67,7 @@ type Task struct {
 
 const PAGE_SIZE = 10
 
-func (m Model) FindTaskByID(conn *gorm.DB, companyID uuid.UUID, userID uuid.UUID, taskID uuid.UUID) (*Task, error) {
+func (m Model) FindTaskByID(conn *gorm.DB, userID uuid.UUID, taskID uuid.UUID) (*Task, error) {
 	task := &Task{ID: taskID}
 	err := conn.
 		Joins("Status").
