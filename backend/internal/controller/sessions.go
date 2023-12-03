@@ -25,7 +25,7 @@ func (h Handler) SignIn(c *gin.Context) {
 		return
 	}
 	session := sessions.Default(c)
-	session.Set("companyId", user.CompanyID.String())
+	session.Set("companyID", user.CompanyID.String())
 	session.Set("userID", user.ID.String())
 	session.Options(sessions.Options{
 		MaxAge:   3600 * 3, // Cookieを用いているので短めに設定

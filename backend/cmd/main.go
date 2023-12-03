@@ -41,6 +41,8 @@ func main() {
 	store := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("auth", store))
 
+	r.Use(controller.CompanyAuthorization())
+
 	model := model.NewModel(db)
 	services := service.NewServices(model, db)
 	handlers := controller.NewHandlers(services)
