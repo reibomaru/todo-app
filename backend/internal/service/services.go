@@ -42,3 +42,7 @@ func (s Services) UpdateTask(taskID uuid.UUID, payload *model.UpdateTaskPayload)
 func (s Services) DeleteTask(taskID uuid.UUID) error {
 	return s.model.DeleteTask(s.DB, taskID)
 }
+
+func (s Services) FindUserWithEmailAndPassword(email string, password string) (*model.User, error) {
+	return s.model.FindUserByEmailAndPassword(s.DB, email, password)
+}

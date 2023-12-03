@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
@@ -35,20 +37,9 @@ func main() {
 		_ = sqlDB.Close()
 	}()
 
-	// r.Use(cors.New(cors.Config{
-	// 	AllowOrigins:     []string{"http://localhost:8081"},
-	// 	AllowMethods:     []string{"POST", "PUT", "PATCH"},
-	// 	ExposeHeaders:    []string{"Content-Length"},
-	// 	AllowCredentials: false,
-	// 	MaxAge: 12 * time.Hour,
-	// }))
-
-	// swagger, err := controller.GetSwagger()
-	// if err != nil {
-	// 	fmt.Fprintf(os.Stderr, "Error loading swagger spec\n: %s", err)
-	// 	os.Exit(1)
-	// }
-	// r.Use(middleware.OapiRequestValidator(swagger))
+	// TODO: keyを予測しづらい文字列にする
+	store := cookie.NewStore([]byte("secret"))
+	r.Use(sessions.Sessions("auth", store))
 
 	model := model.NewModel(db)
 	services := service.NewServices(model, db)

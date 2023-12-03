@@ -36,3 +36,11 @@ func (m Model) FindUserByID(conn *gorm.DB, userID uuid.UUID) (*User, error) {
 	fmt.Println(user)
 	return user, nil
 }
+
+func (m Model) FindUserByEmailAndPassword(conn *gorm.DB, email string, password string) (*User, error) {
+	user := &User{}
+	if err := conn.Where("email = ?", email).Where("password = ?", password).First(user).Error; err != nil {
+		return nil, err
+	}
+	return user, nil
+}
