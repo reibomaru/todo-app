@@ -46,3 +46,7 @@ func (s Services) DeleteTask(taskID uuid.UUID) error {
 func (s Services) FindUserWithEmailAndPassword(email string, password string) (*model.User, error) {
 	return s.model.FindUserByEmailAndPassword(s.DB, email, password)
 }
+
+func (s Services) FindUserByID(userID uuid.UUID) (*model.User, error) {
+	return s.model.FindUserByID(s.DB, userID)
+}

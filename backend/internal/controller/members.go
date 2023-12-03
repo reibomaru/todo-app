@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -31,13 +32,21 @@ func (h Handler) GetMembers(c *gin.Context, companyId string) {
 
 // (GET /api/users/me)
 func (h Handler) GetMyAccount(c *gin.Context) {
-	c.JSON(http.StatusOK, User{
-		Company: Company{
-			Name: "example",
-			Id:   uuid.New(),
-		},
-		Email: "sample@mail.com",
-		Id:    uuid.New(),
-		Name:  "fuga",
-	})
+	session := sessions.Default(c)
+	userID, ok := session.Get("userID").(string)
+	userUUID, err := uuid.Parse(userID)
+	if !ok || err != nil {
+		c.JSON(http.StatusBadRequest, ServerMessage{
+			Message: "invalid request",
+		})
+		return
+	}
+	user, err := h.services.FindUserByID(userUUID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, ServerMessage{
+			Message: "invalid user info",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, NewUser(*user))
 }
