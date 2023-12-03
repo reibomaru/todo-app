@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import api from "~/apis/backend/api";
 import { Task } from "~/apis/backend/gen";
 import HeaderLayout from "~/components/organisms/HeaderLayout";
-import TaskForm from "~/components/organisms/taskForm/TaskForm";
+import TaskForms from "~/components/organisms/taskForm/TaskForms";
 
 const TaskPage = () => {
   const [task, setTask] = useState<Task | null>(null);
@@ -28,7 +28,7 @@ const TaskPage = () => {
   return (
     <HeaderLayout>
       <Grid container direction="column" sx={{ padding: 5 }}>
-        {task && <TaskForm task={task} fetchTask={fetchTask} />}
+        {task && <TaskForms task={task} fetchTask={fetchTask} />}
       </Grid>
     </HeaderLayout>
   );

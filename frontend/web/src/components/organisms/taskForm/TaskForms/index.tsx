@@ -11,7 +11,7 @@ type Props = {
   fetchTask: () => void | Promise<void>;
 };
 
-const TaskForm = ({ task, fetchTask }: Props) => {
+const TaskForms = ({ task, fetchTask }: Props) => {
   return (
     <Grid container direction="column">
       <Grid item>
@@ -74,4 +74,4 @@ const TaskForm = ({ task, fetchTask }: Props) => {
   );
 };
 
-export default TaskForm;
+export default TaskForms;
