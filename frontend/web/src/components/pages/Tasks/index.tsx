@@ -31,6 +31,7 @@ const Tasks = () => {
   const [searchResult, setSearchResult] = useState<SearchResult>({
     total_page_count: 0,
     result: [],
+    page_size: 0,
   });
 
   useEffect(() => {
