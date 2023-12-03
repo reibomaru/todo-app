@@ -1,7 +1,7 @@
 import { Button, Grid, SelectChangeEvent, Typography } from "@mui/material";
 import { ChangeEvent, ReactNode, useCallback, useMemo, useState } from "react";
 import { TaskRequestBody } from "~/apis/backend/gen";
-import TaskItemSelect from "../TaskItemSelect";
+import TaskItemSelect from "~/components/organisms/TaskItemSelect";
 import api from "~/apis/backend/api";
 import { useUser } from "~/hooks/UserContext/helper";
 import dayjs, { Dayjs } from "dayjs";
