@@ -73,7 +73,12 @@ const TaskContentForm = ({ description, taskId, onUpdateForm }: Props) => {
             value={input}
           />
         ) : (
-          <Typography ref={ref} variant="body1" component="p">
+          <Typography
+            ref={ref}
+            variant="body1"
+            component="p"
+            sx={{ whiteSpace: "break-spaces" }}
+          >
             {description}
           </Typography>
         )}
