@@ -5,6 +5,8 @@ import TaskContentForm from "~/components/organisms/taskForm/TaskContentForm";
 import TaskItemForm from "~/components/organisms/taskForm/TaskItemForm";
 import { Task } from "~/apis/backend/gen";
 import dayjs from "dayjs";
+import { useUser } from "~/hooks/UserContext/helper";
+import { publicationRangeDisplay } from "~/apis/backend/api";
 
 type Props = {
   task: Task;
@@ -13,6 +15,7 @@ type Props = {
 };
 
 const TaskForms = ({ task, fetchTask, onlyView }: Props) => {
+  const user = useUser();
   return (
     <Grid container direction="column">
       <Grid item>
@@ -65,10 +68,10 @@ const TaskForms = ({ task, fetchTask, onlyView }: Props) => {
             taskId={task.id}
             itemKey="publication_range"
             label="公開範囲"
-            displayValue={task.publication_range}
+            displayValue={publicationRangeDisplay[task.publication_range]}
             value={task.publication_range}
             onUpdateForm={fetchTask}
-            onlyView={onlyView}
+            onlyView={onlyView && user.id !== task.author.id}
           />
           <TaskItem label="作成者" displayValue={task.author.name} />
           <TaskItem

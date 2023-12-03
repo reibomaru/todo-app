@@ -14,13 +14,15 @@ import { headers } from "./helper";
 import { memo } from "react";
 import { useUser } from "~/hooks/UserContext/helper";
 import dayjs from "dayjs";
+import { publicationRangeDisplay } from "~/apis/backend/api";
 
 const taskEntryToView = (task: Task, key: keyof Task) => {
   switch (key) {
     case "title":
     case "due":
-    case "publication_range":
       return <p>{task[key]}</p>;
+    case "publication_range":
+      return <p>{publicationRangeDisplay[task[key]]}</p>;
     case "created_at":
       return <p>{dayjs(task.updated_at).format("YYYY/MM/DD HH:mm")}</p>;
     case "status":

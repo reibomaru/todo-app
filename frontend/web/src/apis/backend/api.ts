@@ -1,4 +1,8 @@
-import { DefaultApi, SignInRequestBody } from "~/apis/backend/gen/api";
+import {
+  DefaultApi,
+  SignInRequestBody,
+  TaskPublicationRangeEnum,
+} from "~/apis/backend/gen/api";
 import isEmail from "validator/lib/isEmail";
 
 const api = new DefaultApi();
@@ -38,5 +42,10 @@ const validateSignInRequestBody = (form: SignInRequestBody) => {
   return result;
 };
 
+const publicationRangeDisplay = {
+  [TaskPublicationRangeEnum.Author]: "作成者のみ",
+  [TaskPublicationRangeEnum.Company]: "企業内のみ",
+} as const;
+
 export default api;
-export { validateSignInRequestBody };
+export { validateSignInRequestBody, publicationRangeDisplay };

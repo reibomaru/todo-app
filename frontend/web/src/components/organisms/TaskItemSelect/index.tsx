@@ -1,6 +1,7 @@
 import { MenuItem, Select, SelectProps } from "@mui/material";
 import { ReactNode, useEffect, useState } from "react";
-import api from "~/apis/backend/api";
+import api, { publicationRangeDisplay } from "~/apis/backend/api";
+import { TaskPublicationRangeEnum } from "~/apis/backend/gen";
 import { useUser } from "~/hooks/UserContext/helper";
 
 type Option = {
@@ -52,8 +53,14 @@ const fetchOptions = async (
     }
     default:
       return [
-        { value: "only_author", label: "作成者のみ" },
-        { value: "only_company", label: "企業内のみ" },
+        {
+          value: TaskPublicationRangeEnum.Author,
+          label: publicationRangeDisplay[TaskPublicationRangeEnum.Author],
+        },
+        {
+          value: TaskPublicationRangeEnum.Company,
+          label: publicationRangeDisplay[TaskPublicationRangeEnum.Company],
+        },
       ];
   }
 };

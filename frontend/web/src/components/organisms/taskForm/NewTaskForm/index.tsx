@@ -38,7 +38,7 @@ const NewTaskForm = () => {
     assigneeId: user.id,
     statusId: "",
     description: "",
-    publication_range: "only_company",
+    publication_range: TaskPublicationRangeEnum.Company,
   });
   const navigate = useNavigate();
 
