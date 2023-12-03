@@ -24,7 +24,7 @@ const Tasks = () => {
     const status = params.get("status") || "";
     const sort = params.get("sort") || "";
     const castedPage = Number(params.get("page"));
-    const page = isNaN(castedPage) ? castedPage : 1;
+    const page = isNaN(castedPage) ? 1 : castedPage;
     return { assignee, status, sort, page };
   }, [location.search]);
   const user = useUser();
@@ -124,13 +124,14 @@ const Tasks = () => {
             onClickHeader={handleHeaderClick}
           />
         </Grid>
-      </Grid>
-      <Grid item container justifyContent="center">
-        <Pagination
-          count={searchResult.total_page_count}
-          page={currParams.page}
-          onChange={handleChangePage}
-        />
+        <Grid item container justifyContent="center">
+          <Pagination
+            sx={{ padding: 5 }}
+            count={searchResult.total_page_count}
+            page={currParams.page}
+            onChange={handleChangePage}
+          />
+        </Grid>
       </Grid>
     </HeaderLayout>
   );
