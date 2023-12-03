@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/reibomaru/todo-app/backend/internal/model"
@@ -12,6 +13,21 @@ import (
 
 // (GET /api/companies/{company_id}/search)
 func (h Handler) SearchTask(c *gin.Context, companyId string, params SearchTaskParams) {
+	session := sessions.Default(c)
+	userID, ok := session.Get("userID").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, ServerMessage{
+			Message: "invalid id",
+		})
+		return
+	}
+	userUUID, err := uuid.Parse(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, ServerMessage{
+			Message: "invalid id",
+		})
+		return
+	}
 	companyUUID, err := uuid.Parse(companyId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ServerMessage{
@@ -24,7 +40,7 @@ func (h Handler) SearchTask(c *gin.Context, companyId string, params SearchTaskP
 		page = int(*params.Page)
 	}
 
-	searchResult, err := h.services.SearchTasksByQuery(companyUUID, params.Assignee, params.Status, params.Sort, int(page))
+	searchResult, err := h.services.SearchTasksByQuery(companyUUID, userUUID, params.Assignee, params.Status, params.Sort, int(page))
 	if err != nil {
 		c.JSON(http.StatusNotFound, ServerMessage{
 			Message: "not found tasks",
@@ -129,6 +145,21 @@ func (h Handler) DeleteTask(c *gin.Context, companyId string, taskId string) {
 
 // (GET /api/companies/{company_id}/tasks/{task_id})
 func (h Handler) GetTask(c *gin.Context, companyId string, taskId string) {
+	session := sessions.Default(c)
+	userID, ok := session.Get("userID").(string)
+	if !ok {
+		c.JSON(http.StatusBadRequest, ServerMessage{
+			Message: "invalid id",
+		})
+		return
+	}
+	userUUID, err := uuid.Parse(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, ServerMessage{
+			Message: "invalid id",
+		})
+		return
+	}
 	companyUUID, err := uuid.Parse(companyId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ServerMessage{
@@ -143,7 +174,7 @@ func (h Handler) GetTask(c *gin.Context, companyId string, taskId string) {
 		})
 		return
 	}
-	task, err := h.services.FindTaskByID(companyUUID, taskUUID)
+	task, err := h.services.FindTaskByID(companyUUID, userUUID, taskUUID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, ServerMessage{
 			Message: fmt.Sprintf("not found task id: %v", taskUUID),

@@ -30,12 +30,14 @@ const TaskPage = () => {
   return (
     <HeaderLayout>
       <Grid container direction="column" sx={{ padding: 5 }}>
-        {task && (
+        {task ? (
           <TaskForms
             onlyView={user.role !== "editor"}
             task={task}
             fetchTask={fetchTask}
           />
+        ) : (
+          <p>該当するタスクが存在しません</p>
         )}
       </Grid>
     </HeaderLayout>

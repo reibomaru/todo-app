@@ -68,7 +68,7 @@ type Task struct {
 
 const PAGE_SIZE = 10
 
-func (m Model) FindTaskByID(conn *gorm.DB, companyID uuid.UUID, taskID uuid.UUID) (*Task, error) {
+func (m Model) FindTaskByID(conn *gorm.DB, companyID uuid.UUID, userID uuid.UUID, taskID uuid.UUID) (*Task, error) {
 	task := &Task{ID: taskID}
 	err := conn.
 		Joins("Status").
@@ -77,6 +77,7 @@ func (m Model) FindTaskByID(conn *gorm.DB, companyID uuid.UUID, taskID uuid.UUID
 		Joins("Author.Company").
 		Joins("Assignee").
 		Joins("Assignee.Company").
+		Where("author_id = ? OR publication_range = ?", userID, TaskPublicationRangeOnlyCompany).
 		First(task).Error
 	if err != nil {
 		return nil, err
@@ -99,7 +100,7 @@ type SearchResult struct {
 	PageCount int32
 }
 
-func (m Model) FindTasksByQuery(conn *gorm.DB, companyID uuid.UUID, assigneeName *string, statusName *string, sort *string, page int) (*SearchResult, error) {
+func (m Model) FindTasksByQuery(conn *gorm.DB, companyID uuid.UUID, userID uuid.UUID, assigneeName *string, statusName *string, sort *string, page int) (*SearchResult, error) {
 	var tasks []*Task
 	var count int64
 	whereConditions := make(map[string]string)
@@ -110,7 +111,7 @@ func (m Model) FindTasksByQuery(conn *gorm.DB, companyID uuid.UUID, assigneeName
 		whereConditions["Status.name"] = *statusName
 	}
 	whereConditions["Company.id"] = companyID.String()
-	sortKey := "created_at"
+	sortKey := "created_at desc"
 	if sort != nil && *sort == "due" {
 		sortKey = *sort
 	}
@@ -124,7 +125,8 @@ func (m Model) FindTasksByQuery(conn *gorm.DB, companyID uuid.UUID, assigneeName
 		Joins("Assignee").
 		Joins("Assignee.Company").
 		Where(whereConditions).
-		Order(fmt.Sprintf("%v desc", sortKey)).
+		Where("author_id = ? OR publication_range = ?", userID, TaskPublicationRangeOnlyCompany).
+		Order(sortKey).
 		Offset(offset).
 		Limit(PAGE_SIZE).
 		Find(&tasks).Error
@@ -137,6 +139,7 @@ func (m Model) FindTasksByQuery(conn *gorm.DB, companyID uuid.UUID, assigneeName
 		Joins("Company").
 		Joins("Assignee").
 		Where(whereConditions).
+		Where("author_id = ? OR publication_range = ?", userID, TaskPublicationRangeOnlyCompany).
 		Count(&count).Error
 	if err != nil {
 		fmt.Println(err.Error())

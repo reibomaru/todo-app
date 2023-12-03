@@ -15,16 +15,16 @@ func NewServices(model *model.Model, db *gorm.DB) *Services {
 	return &Services{model: model, DB: db}
 }
 
-func (s Services) SearchTasksByQuery(companyID uuid.UUID, assignee *string, status *string, sort *string, page int) (*model.SearchResult, error) {
-	return s.model.FindTasksByQuery(s.DB, companyID, assignee, status, sort, page)
+func (s Services) SearchTasksByQuery(companyID uuid.UUID, userID uuid.UUID, assignee *string, status *string, sort *string, page int) (*model.SearchResult, error) {
+	return s.model.FindTasksByQuery(s.DB, companyID, userID, assignee, status, sort, page)
 }
 
 func (s Services) FindTaskStatusByCompanyID(companyID uuid.UUID) ([]*model.TaskStatus, error) {
 	return s.model.FindTaskStatusByCompanyID(s.DB, companyID)
 }
 
-func (s Services) FindTaskByID(companyID uuid.UUID, taskID uuid.UUID) (*model.Task, error) {
-	return s.model.FindTaskByID(s.DB, companyID, taskID)
+func (s Services) FindTaskByID(companyID uuid.UUID, userID uuid.UUID, taskID uuid.UUID) (*model.Task, error) {
+	return s.model.FindTaskByID(s.DB, companyID, userID, taskID)
 }
 
 func (s Services) FindMembersByCompanyID(companyID uuid.UUID) ([]*model.User, error) {
