@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"math"
 	"time"
 
@@ -142,11 +141,9 @@ func (m Model) FindTasksByQuery(conn *gorm.DB, companyID uuid.UUID, userID uuid.
 		Where("author_id = ? OR publication_range = ?", userID, TaskPublicationRangeOnlyCompany).
 		Count(&count).Error
 	if err != nil {
-		fmt.Println(err.Error())
 		return nil, err
 	}
 	pageCount := int32(math.Ceil(float64(count) / float64(PAGE_SIZE)))
-	fmt.Println(pageCount)
 	return &SearchResult{
 		Tasks:     tasks,
 		PageCount: pageCount,
@@ -175,7 +172,6 @@ func (m Model) UpdateTask(conn *gorm.DB, taskID uuid.UUID, payload *UpdateTaskPa
 		ID: taskID,
 	}
 	if err := conn.Model(task).Updates(payload).Error; err != nil {
-		fmt.Println(err.Error())
 		return err
 	}
 	return nil
@@ -186,7 +182,6 @@ func (m Model) DeleteTask(conn *gorm.DB, taskID uuid.UUID) error {
 		ID: taskID,
 	}
 	if err := conn.Delete(task).Error; err != nil {
-		fmt.Println(err.Error())
 		return err
 	}
 	return nil

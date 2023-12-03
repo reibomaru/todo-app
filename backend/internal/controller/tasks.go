@@ -92,7 +92,6 @@ func (h Handler) CreateTask(c *gin.Context, companyId string) {
 	}
 	taskReqBody := &TaskRequestBody{}
 	if err = c.BindJSON(taskReqBody); err != nil {
-		fmt.Println(err.Error())
 		c.JSON(http.StatusBadRequest, ServerMessage{
 			Message: "invalid body",
 		})
@@ -195,7 +194,6 @@ func (h Handler) UpdateTask(c *gin.Context, companyId string, taskId string) {
 	}
 	taskReqBody := &TaskRequestBody{}
 	if err := c.BindJSON(taskReqBody); err != nil {
-		fmt.Println(err.Error())
 		c.JSON(http.StatusBadRequest, ServerMessage{
 			Message: "invalid body",
 		})
@@ -213,7 +211,6 @@ func (h Handler) UpdateTask(c *gin.Context, companyId string, taskId string) {
 		PublicationRange: (*model.TaskPublicationRange)(taskReqBody.PublicationRange),
 		StatusID:         taskReqBody.StatusId,
 	}); err != nil {
-		fmt.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, ServerMessage{
 			Message: "invalid body",
 		})

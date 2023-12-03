@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-contrib/sessions"
@@ -33,7 +32,6 @@ func (h Handler) SignIn(c *gin.Context) {
 		HttpOnly: true,
 	})
 	if err := session.Save(); err != nil {
-		fmt.Println(err.Error())
 		c.JSON(http.StatusInternalServerError, ServerMessage{
 			Message: "sorry... failed attatching auth info",
 		})

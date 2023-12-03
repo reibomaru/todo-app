@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -32,7 +30,6 @@ func (m Model) FindUsersByCompanyID(conn *gorm.DB, companyID uuid.UUID) ([]*User
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(users)
 	return users, nil
 }
 
@@ -44,7 +41,6 @@ func (m Model) FindUserByID(conn *gorm.DB, userID uuid.UUID) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(user)
 	return user, nil
 }
 
