@@ -1,4 +1,4 @@
-import { Chip, Grid } from "@mui/material";
+import { Button, Chip, Grid } from "@mui/material";
 import TaskItem from "~/components/organisms/TaskItem";
 import TaskTitleForm from "~/components/organisms/taskForm/TaskTitleForm";
 import TaskContentForm from "~/components/organisms/taskForm/TaskContentForm";
@@ -6,7 +6,9 @@ import TaskItemForm from "~/components/organisms/taskForm/TaskItemForm";
 import { Task } from "~/apis/backend/gen";
 import dayjs from "dayjs";
 import { useUser } from "~/hooks/UserContext/helper";
-import { publicationRangeDisplay } from "~/apis/backend/api";
+import api, { publicationRangeDisplay } from "~/apis/backend/api";
+import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   task: Task;
@@ -16,6 +18,15 @@ type Props = {
 
 const TaskForms = ({ task, fetchTask, onlyView }: Props) => {
   const user = useUser();
+  const navigate = useNavigate();
+  const deleteTask = useCallback(async () => {
+    const ok = confirm("本当にタスクを削除しますか?");
+    if (!ok) {
+      return;
+    }
+    api.deleteTask(user.company.id, task.id);
+    navigate(`/${user.company.id}/tasks`);
+  }, [navigate, task.id, user.company.id]);
   return (
     <Grid container direction="column">
       <Grid item>
@@ -78,6 +89,13 @@ const TaskForms = ({ task, fetchTask, onlyView }: Props) => {
             label="最終更新日"
             displayValue={dayjs(task.updated_at).format("YYYY/MM/DD HH:mm")}
           />
+          {onlyView || (
+            <Grid item>
+              <Button onClick={deleteTask} variant="contained" color="error">
+                削除
+              </Button>
+            </Grid>
+          )}
         </Grid>
       </Grid>
     </Grid>
