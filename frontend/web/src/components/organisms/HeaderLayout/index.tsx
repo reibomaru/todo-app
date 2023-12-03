@@ -18,7 +18,6 @@ const HeaderLayout = ({ children }: Props) => {
       await fetchUser();
       navigate("/signin");
     } catch (error) {
-      console.error(error);
       alert("サインアウトに失敗しました");
       return;
     }

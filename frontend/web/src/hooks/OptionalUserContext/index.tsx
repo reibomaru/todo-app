@@ -21,7 +21,6 @@ const OptionalUserProvider = ({ children }: Props) => {
         role: data.role,
       });
     } catch (error) {
-      console.error(error);
       setUser(null);
     }
   }, []);
