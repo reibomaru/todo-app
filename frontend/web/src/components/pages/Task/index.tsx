@@ -1,4 +1,5 @@
 import { Chip, Grid } from "@mui/material";
+import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "~/apis/backend/api";
@@ -83,7 +84,12 @@ const TaskPage = () => {
                   onUpdateForm={fetchTask}
                 />
                 <TaskItem label="作成者" displayValue={task.author.name} />
-                <TaskItem label="最終更新日" displayValue={task.updated_at} />
+                <TaskItem
+                  label="最終更新日"
+                  displayValue={dayjs(task.updated_at).format(
+                    "YYYY/MM/DD HH:mm"
+                  )}
+                />
               </Grid>
             </Grid>
           </>
