@@ -62,7 +62,7 @@ const TaskItemForm = ({
 
   const formContent = useMemo(() => {
     switch (itemKey) {
-      case "assigneeIds":
+      case "assigneeId":
         return (
           <TaskItemSelect
             value={value}

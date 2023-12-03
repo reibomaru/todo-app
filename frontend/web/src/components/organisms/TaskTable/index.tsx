@@ -25,10 +25,8 @@ const taskEntryToView = (task: Task, key: keyof Task) => {
       return <p>{task[key].name}</p>;
     case "author":
       return <p>{task[key].name}</p>;
-    case "assignees":
-      return task[key].map((assignee) => (
-        <Chip key={assignee.id} label={assignee.name} />
-      ));
+    case "assignee":
+      return <Chip key={task[key].id} label={task[key].name} />;
     default:
       return <p>-</p>;
   }

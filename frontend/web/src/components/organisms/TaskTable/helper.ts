@@ -20,7 +20,7 @@ export const headers: Header[] = [
     value: "公開範囲",
   },
   {
-    key: "assignees",
+    key: "assignee",
     value: "担当者",
   },
   {

@@ -60,14 +60,10 @@ const TaskPage = () => {
                 />
                 <TaskItemForm
                   taskId={task.id}
-                  itemKey="assigneeIds"
+                  itemKey="assigneeId"
                   label="担当者"
-                  displayValue={task.assignees
-                    .map((assignee) => assignee.name)
-                    .join("/")}
-                  value={task.assignees
-                    .map((assignee) => assignee.id)
-                    .join("/")}
+                  displayValue={task.assignee.name}
+                  value={task.assignee.id}
                   onUpdateForm={fetchTask}
                 />
                 <TaskItemForm
