@@ -48,6 +48,7 @@ func (h Handler) SignIn(c *gin.Context) {
 func (h Handler) SignOut(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Clear()
+	session.Options(sessions.Options{MaxAge: -1})
 	session.Save()
 	c.JSON(http.StatusOK, ServerMessage{
 		Message: "ok",
