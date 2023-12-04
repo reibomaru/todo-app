@@ -77,14 +77,18 @@ const TaskItemSelect = ({ selectType, children, ...selectProps }: Props) => {
   }, [selectType, user.company.id]);
 
   return (
-    <Select {...selectProps}>
-      {options.map((opt) => (
-        <MenuItem key={opt.value} value={opt.value}>
-          {opt.label}
-        </MenuItem>
-      ))}
-      {children}
-    </Select>
+    <>
+      {options.length > 0 && (
+        <Select {...selectProps}>
+          {options.map((opt) => (
+            <MenuItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </MenuItem>
+          ))}
+          {children}
+        </Select>
+      )}
+    </>
   );
 };
 
