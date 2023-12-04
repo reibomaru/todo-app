@@ -1,0 +1,264 @@
+@startuml todo
+namespace controller {
+    class Company << (S,Aquamarine) >> {
+        + Id types.UUID
+        + Name string
+
+    }
+    class GinServerOptions << (S,Aquamarine) >> {
+        + BaseURL string
+        + Middlewares []MiddlewareFunc
+        + ErrorHandler <font color=blue>func</font>(*gin.Context, error, int) 
+
+    }
+    class Handler << (S,Aquamarine) >> {
+        - services *service.Services
+
+        + GetMembers(c *gin.Context, companyId string) 
+        + GetMyAccount(c *gin.Context) 
+        + SignIn(c *gin.Context) 
+        + SignOut(c *gin.Context) 
+        + SearchTask(c *gin.Context, companyId string, params SearchTaskParams) 
+        + GetTaskStatus(c *gin.Context, companyId string) 
+        + CreateTask(c *gin.Context, companyId string) 
+        + DeleteTask(c *gin.Context, companyId string, taskId string) 
+        + GetTask(c *gin.Context, companyId string, taskId string) 
+        + UpdateTask(c *gin.Context, companyId string, taskId string) 
+
+    }
+    class SearchResult << (S,Aquamarine) >> {
+        + PageSize int32
+        + Result []Task
+        + TotalPageCount int32
+
+    }
+    class SearchTaskParams << (S,Aquamarine) >> {
+        + Assignee *string
+        + Status *string
+        + Sort *string
+        + Page *int32
+
+    }
+    interface ServerInterface  {
+        + GetMembers(c *gin.Context, companyId string) 
+        + SearchTask(c *gin.Context, companyId string, params SearchTaskParams) 
+        + GetTaskStatus(c *gin.Context, companyId string) 
+        + CreateTask(c *gin.Context, companyId string) 
+        + DeleteTask(c *gin.Context, companyId string, taskId string) 
+        + GetTask(c *gin.Context, companyId string, taskId string) 
+        + UpdateTask(c *gin.Context, companyId string, taskId string) 
+        + SignIn(c *gin.Context) 
+        + SignOut(c *gin.Context) 
+        + GetMyAccount(c *gin.Context) 
+
+    }
+    class ServerInterfaceWrapper << (S,Aquamarine) >> {
+        + Handler ServerInterface
+        + HandlerMiddlewares []MiddlewareFunc
+        + ErrorHandler <font color=blue>func</font>(*gin.Context, error, int) 
+
+        + GetMembers(c *gin.Context) 
+        + SearchTask(c *gin.Context) 
+        + GetTaskStatus(c *gin.Context) 
+        + CreateTask(c *gin.Context) 
+        + DeleteTask(c *gin.Context) 
+        + GetTask(c *gin.Context) 
+        + UpdateTask(c *gin.Context) 
+        + SignIn(c *gin.Context) 
+        + SignOut(c *gin.Context) 
+        + GetMyAccount(c *gin.Context) 
+
+    }
+    class ServerMessage << (S,Aquamarine) >> {
+        + Message string
+
+    }
+    class SignInRequestBody << (S,Aquamarine) >> {
+        + Email types.Email
+        + Password string
+
+    }
+    class Task << (S,Aquamarine) >> {
+        + Assignee User
+        + Author User
+        + Company Company
+        + CreatedAt string
+        + Description string
+        + Due types.Date
+        + Id types.UUID
+        + PublicationRange TaskPublicationRange
+        + Status TaskStatus
+        + Title string
+        + UpdatedAt string
+
+    }
+    class TaskRequestBody << (S,Aquamarine) >> {
+        + AssigneeId *types.UUID
+        + CompanyId *types.UUID
+        + Description *string
+        + Due *types.Date
+        + PublicationRange *TaskRequestBodyPublicationRange
+        + StatusId *types.UUID
+        + Title *string
+
+    }
+    class TaskStatus << (S,Aquamarine) >> {
+        + CreatedAt string
+        + Id types.UUID
+        + Name string
+        + UpdatedAt string
+
+    }
+    class User << (S,Aquamarine) >> {
+        + Company Company
+        + Email types.Email
+        + Id types.UUID
+        + Name string
+        + Role UserRole
+
+    }
+    class controller.CreateTaskJSONRequestBody << (T, #FF7700) >>  {
+    }
+    class controller.MiddlewareFunc << (T, #FF7700) >>  {
+    }
+    class controller.SignInJSONRequestBody << (T, #FF7700) >>  {
+    }
+    class controller.TaskPublicationRange << (T, #FF7700) >>  {
+    }
+    class controller.TaskRequestBodyPublicationRange << (T, #FF7700) >>  {
+    }
+    class controller.UpdateTaskJSONRequestBody << (T, #FF7700) >>  {
+    }
+    class controller.UserRole << (T, #FF7700) >>  {
+    }
+    class "<font color=blue>func</font>(*gin.Context) " as fontcolorbluefuncfontginContext {
+        'This class was created so that we can correctly have an alias pointing to this name. Since it contains dots that can break namespaces
+    }
+}
+
+"controller.ServerInterface" <|-- "controller.Handler"
+
+namespace model {
+    class Company << (S,Aquamarine) >> {
+        + ID uuid.UUID
+        + Name string
+
+    }
+    class CreateTaskPayload << (S,Aquamarine) >> {
+        + CompanyID uuid.UUID
+        + AssigeeID uuid.UUID
+        + AuthorID uuid.UUID
+        + Due time.Time
+        + Title string
+        + Description string
+        + PublicationRange TaskPublicationRange
+        + StatusID uuid.UUID
+
+    }
+    class Model << (S,Aquamarine) >> {
+        + FindTaskByID(conn *gorm.DB, userID uuid.UUID, taskID uuid.UUID) (*Task, error)
+        + FindTaskStatusByCompanyID(conn *gorm.DB, companyID uuid.UUID) ([]*TaskStatus, error)
+        + FindTasksByQuery(conn *gorm.DB, companyID uuid.UUID, userID uuid.UUID, assigneeName *string, statusName *string, sort *string, page int) (*SearchResult, error)
+        + CreateTask(conn *gorm.DB, payload *CreateTaskPayload) error
+        + UpdateTask(conn *gorm.DB, taskID uuid.UUID, payload *UpdateTaskPayload) error
+        + DeleteTask(conn *gorm.DB, taskID uuid.UUID) error
+        + FindUsersByCompanyID(conn *gorm.DB, companyID uuid.UUID) ([]*User, error)
+        + FindUserByID(conn *gorm.DB, userID uuid.UUID) (*User, error)
+        + FindUserByEmailAndPassword(conn *gorm.DB, email string, password string) (*User, error)
+
+    }
+    class ModelBase << (S,Aquamarine) >> {
+        + CreatedAt time.Time
+        + UpdatedAt time.Time
+        + DeletedAt gorm.DeletedAt
+
+    }
+    class SearchResult << (S,Aquamarine) >> {
+        + Tasks []*Task
+        + PageCount int32
+
+    }
+    class Task << (S,Aquamarine) >> {
+        + ID uuid.UUID
+        + Due time.Time
+        + Title string
+        + Description string
+        + PublicationRange TaskPublicationRange
+        + CompanyID uuid.UUID
+        + Company Company
+        + StatusID uuid.UUID
+        + Status TaskStatus
+        + AssigneeID uuid.UUID
+        + Assignee User
+        + AuthorID uuid.UUID
+        + Author User
+
+    }
+    class TaskStatus << (S,Aquamarine) >> {
+        + ID uuid.UUID
+        + Name string
+        + CompanyID uuid.UUID
+
+        + TableName() string
+
+    }
+    class UpdateTaskPayload << (S,Aquamarine) >> {
+        + AssigneeID *uuid.UUID
+        + Due *time.Time
+        + Title *string
+        + Description *string
+        + PublicationRange *TaskPublicationRange
+        + StatusID *uuid.UUID
+        + UpdatedAt time.Time
+
+    }
+    class User << (S,Aquamarine) >> {
+        + ID uuid.UUID
+        + Name string
+        + Email string
+        + CompanyID uuid.UUID
+        + Company Company
+        + Role UserRole
+
+    }
+    class model.TaskPublicationRange << (T, #FF7700) >>  {
+    }
+    class model.UserRole << (T, #FF7700) >>  {
+    }
+}
+"model.ModelBase" *-- "model.Company"
+"model.ModelBase" *-- "model.Task"
+"model.ModelBase" *-- "model.TaskStatus"
+"model.ModelBase" *-- "model.User"
+
+
+namespace service {
+    class Services << (S,Aquamarine) >> {
+        - model *model.Model
+
+        + DB *gorm.DB
+
+        + SearchTasksByQuery(companyID uuid.UUID, userID uuid.UUID, assignee *string, status *string, sort *string, page int) (*model.SearchResult, error)
+        + FindTaskStatusByCompanyID(companyID uuid.UUID) ([]*model.TaskStatus, error)
+        + FindTaskByID(userID uuid.UUID, taskID uuid.UUID) (*model.Task, error)
+        + FindMembersByCompanyID(companyID uuid.UUID) ([]*model.User, error)
+        + CreateTask(userID uuid.UUID, newTask *model.CreateTaskPayload) error
+        + UpdateTask(userID uuid.UUID, taskID uuid.UUID, payload *model.UpdateTaskPayload) error
+        + DeleteTask(userID uuid.UUID, taskID uuid.UUID) error
+        + FindUserWithEmailAndPassword(email string, password string) (*model.User, error)
+        + FindUserByID(userID uuid.UUID) (*model.User, error)
+
+    }
+}
+
+
+"__builtin__.string" #.. "controller.TaskPublicationRange"
+"__builtin__.string" #.. "controller.TaskRequestBodyPublicationRange"
+"__builtin__.string" #.. "controller.UserRole"
+"__builtin__.string" #.. "model.TaskPublicationRange"
+"__builtin__.string" #.. "model.UserRole"
+"controller.fontcolorbluefuncfontginContext" #.. "controller.MiddlewareFunc"
+"controller.SignInRequestBody" #.. "controller.SignInJSONRequestBody"
+"controller.TaskRequestBody" #.. "controller.CreateTaskJSONRequestBody"
+"controller.TaskRequestBody" #.. "controller.UpdateTaskJSONRequestBody"
+@enduml
