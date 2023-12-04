@@ -37,9 +37,8 @@ func main() {
 		_ = sqlDB.Close()
 	}()
 
-	// TODO: keyを予測しづらい文字列にする
-	store := cookie.NewStore([]byte("secret"))
-	r.Use(sessions.Sessions("auth", store))
+	store := cookie.NewStore([]byte(os.Getenv("SESSION_KEY")))
+	r.Use(sessions.Sessions("todo", store))
 
 	r.Use(controller.CompanyAuthorization())
 
