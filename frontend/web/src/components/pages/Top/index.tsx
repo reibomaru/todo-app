@@ -13,7 +13,6 @@ const Top = () => {
             <li>
               <Link to="signin">サインイン</Link>
             </li>
-            <li></li>
           </ul>
           <h2>開発者向け</h2>
           <ul>
