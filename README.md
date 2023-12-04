@@ -7,14 +7,27 @@ Docker >= 24.0.7 (動作確認済み)
 ```
 
 ## Quick Start
-
-サーバーを立ち上げる
-
+### 各種サーバー立ち上げ
+1. backendディレクトリにて`.env`ファイルの作成
+`.env.example`を参考に`.env`ファイルを作成してください(ローカル実行ではコピーして使用しても問題ありません)
+2. サーバーを立ち上げる
 ```bash
 make app
 ```
-
 http://localhost:8000 にアクセス
+### サンプルのユーザー
+editor権限ユーザー
+```
+email: sample1@mail.com
+password: Password-123
+```
+
+viewer権限ユーザー
+```
+email: sample2@mail.com
+password: Password-123
+```
+
 
 ## 開発者向け
 
