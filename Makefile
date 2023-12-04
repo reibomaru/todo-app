@@ -7,7 +7,7 @@ FRONTEND_GEN_FILE = $(FRONTEND_GEN_DIR)/api.ts
 
 .PHONY: app openapi-gen swagger-ui mock
 
-app:
+app: openapi-gen
 	docker compose --profile app up --build
 
 frontend-with-mock:
