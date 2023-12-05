@@ -5,7 +5,7 @@ BACKEND_GEN_FILE = backend/internal/controller/openapi.gen.go
 FRONTEND_GEN_DIR = frontend/web/src/apis/backend/gen
 FRONTEND_GEN_FILE = $(FRONTEND_GEN_DIR)/api.ts
 
-.PHONY: app openapi-gen swagger-ui mock
+.PHONY: app frontend-with-mock openapi-gen swagger-ui mock
 
 app: openapi-gen
 	docker compose --profile app up --build
@@ -29,3 +29,7 @@ swagger-ui:
 
 mock:
 	docker compose up prism
+
+### clean ###
+clean:
+	docker compose down
