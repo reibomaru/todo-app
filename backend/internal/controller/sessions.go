@@ -30,6 +30,7 @@ func (h Handler) SignIn(c *gin.Context) {
 		MaxAge:   3600 * 3, // Cookieを用いているので短めに設定
 		Secure:   true,
 		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
 	})
 	if err := session.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, ServerMessage{
