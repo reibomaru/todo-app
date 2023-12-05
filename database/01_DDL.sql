@@ -26,7 +26,7 @@ CREATE TABLE companies (
 -- Users Table
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(200) UNIQUE NOT NULL,
     password VARCHAR(64) NOT NULL,
     role role NOT NULL,
