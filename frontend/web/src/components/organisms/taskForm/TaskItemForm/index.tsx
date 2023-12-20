@@ -1,15 +1,13 @@
 import { Button, Grid, SelectChangeEvent, Typography } from "@mui/material";
 import { ChangeEvent, ReactNode, useCallback, useMemo, useState } from "react";
 import { TaskRequestBody } from "~/apis/backend/gen";
-import api from "~/apis/backend/api";
 import { useUser } from "~/hooks/UserContext/helper";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { queryKey } from "~/apis/backend/queryKey";
 import MembersSelect from "../../MembersSelect";
 import PublicationRangeSelect from "~/components/organisms/PublicationRangeSelect";
 import TaskStatusSelect from "../../TaskStatusSelect";
+import { useTaskUpdateMutation } from "~/apis/backend/mutation";
 
 type Props = {
   taskId: string;
@@ -30,27 +28,9 @@ const TaskItemForm = ({
 }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const user = useUser();
-  const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationKey: ["updateTask", user.company.id, taskId],
-    mutationFn: ({
-      itemKey,
-      value,
-    }: {
-      itemKey: keyof TaskRequestBody;
-      value: string;
-    }) => {
-      return api.updateTask(user.company.id, taskId, {
-        [itemKey]: value,
-      });
-    },
-    onSuccess: () => {
-      setIsEditing(false);
-      queryClient.invalidateQueries({
-        queryKey: queryKey.task(user.company.id, taskId),
-      });
-    },
+  const taskUpdateMutation = useTaskUpdateMutation({
+    taskId,
   });
 
   const udpateTaskItem = useCallback(
@@ -60,10 +40,14 @@ const TaskItemForm = ({
           | SelectChangeEvent<string>
           | ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
       ) => {
-        mutation.mutate({ itemKey, value: event.target.value });
+        taskUpdateMutation.mutate({
+          taskKey: itemKey,
+          value: event.target.value,
+        });
+        setIsEditing(false)
       };
     },
-    [mutation],
+    [taskUpdateMutation],
   );
 
   const udpateTaskDateItem = useCallback(
@@ -72,10 +56,14 @@ const TaskItemForm = ({
         if (!value) {
           return;
         }
-        mutation.mutate({ itemKey, value: value?.format("YYYY-MM-DD") });
+        taskUpdateMutation.mutate({
+          taskKey: itemKey,
+          value: value?.format("YYYY-MM-DD"),
+        });
+        setIsEditing(false)
       };
     },
-    [mutation],
+    [taskUpdateMutation],
   );
 
   const formContent = useMemo(() => {

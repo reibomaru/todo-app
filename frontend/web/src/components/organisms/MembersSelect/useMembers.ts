@@ -1,4 +1,4 @@
-import { useMembersQuery } from "~/apis/backend/hooks";
+import { useMembersQuery } from "~/apis/backend/query";
 import { MemberSelectTypeEnum } from "~/models/selectType";
 
 export const useMemberOptions = (

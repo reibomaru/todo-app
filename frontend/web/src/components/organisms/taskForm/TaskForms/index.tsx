@@ -5,12 +5,11 @@ import TaskContentForm from "~/components/organisms/taskForm/TaskContentForm";
 import TaskItemForm from "~/components/organisms/taskForm/TaskItemForm";
 import dayjs from "dayjs";
 import { useUser } from "~/hooks/UserContext/helper";
-import api, { publicationRangeDisplay } from "~/apis/backend/api";
+import { publicationRangeDisplay } from "~/apis/backend/api";
 import { useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTask } from "./useTask";
-import { queryKey } from "~/apis/backend/queryKey";
+import { useTaskDeleteMutation } from "~/apis/backend/mutation";
 
 type Props = {
   onlyView: boolean;
@@ -20,39 +19,18 @@ const TaskForms = ({ onlyView }: Props) => {
   const user = useUser();
   const navigate = useNavigate();
   const { companyId, taskId } = useParams();
-  const queryClient = useQueryClient();
-
   const { status, data: task } = useTask(companyId, taskId);
 
-  const mutation = useMutation({
-    mutationKey: ["deleteTask", user.company.id, taskId],
-    mutationFn: ({
-      companyId,
-      taskId,
-    }: {
-      companyId?: string;
-      taskId?: string;
-    }) => {
-      if (!companyId || !taskId) {
-        throw new Error("不適切なidです");
-      }
-      return api.deleteTask(companyId, taskId);
-    },
-    onSuccess: (_, { companyId = "", taskId = "" }) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKey.task(companyId, taskId),
-      });
-    },
-  });
+  const taskDeleteMutation = useTaskDeleteMutation({ taskId: taskId || "" });
 
   const deleteTask = useCallback(async () => {
     const ok = confirm("本当にタスクを削除しますか?");
     if (!ok) {
       return;
     }
-    mutation.mutate({ companyId, taskId });
+    taskDeleteMutation.mutate();
     navigate(`/${user.company.id}/tasks`);
-  }, [companyId, mutation, navigate, taskId, user.company.id]);
+  }, [navigate, taskDeleteMutation, user.company.id]);
 
   if (status === "pending") {
     return (

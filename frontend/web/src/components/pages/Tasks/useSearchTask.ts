@@ -1,4 +1,4 @@
-import { useSearchTasksQuery } from "~/apis/backend/hooks";
+import { useSearchTasksQuery } from "~/apis/backend/query";
 
 export const useSearchTask = (
   companyId: string,

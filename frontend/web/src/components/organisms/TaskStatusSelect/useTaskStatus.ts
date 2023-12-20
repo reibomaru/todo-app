@@ -1,4 +1,4 @@
-import { useTaskStatusQuery } from "~/apis/backend/hooks";
+import { useTaskStatusQuery } from "~/apis/backend/query";
 import { TaskStatusSelectTypeEnum } from "~/models/selectType";
 
 export const useTaskStatus = (

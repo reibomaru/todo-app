@@ -1,10 +1,7 @@
 import { Button, Grid, Typography } from "@mui/material";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
-import api from "~/apis/backend/api";
-import { useUser } from "~/hooks/UserContext/helper";
 import TextareaAutosize from "react-textarea-autosize";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { queryKey } from "~/apis/backend/queryKey";
+import { useTaskUpdateMutation } from "~/apis/backend/mutation";
 
 type Props = {
   description: string;
@@ -17,8 +14,6 @@ const TaskContentForm = ({ description, taskId, onlyView }: Props) => {
   const [input, setInput] = useState(description);
   const [typographyClassName, setTypographyClassName] = useState("");
   const ref = useRef<HTMLHeadingElement>(null);
-  const user = useUser();
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (ref.current) {
@@ -26,24 +21,14 @@ const TaskContentForm = ({ description, taskId, onlyView }: Props) => {
     }
   }, [ref]);
 
-  const mutation = useMutation({
-    mutationKey: ["updateTask", user.company.id, taskId],
-    mutationFn: () => {
-      return api.updateTask(user.company.id, taskId, {
-        description: input,
-      });
-    },
-    onSuccess: () => {
-      setIsEditing(false);
-      queryClient.invalidateQueries({
-        queryKey: queryKey.task(user.company.id, taskId),
-      });
-    },
+  const taskUpdateMutation = useTaskUpdateMutation({
+    taskId,
   });
 
   const updateDescrption = useCallback(async () => {
-    mutation.mutate();
-  }, [mutation]);
+    taskUpdateMutation.mutate({ taskKey: "description", value: input });
+    setIsEditing(false)
+  }, [input, taskUpdateMutation]);
   return (
     <Grid item container direction="column" spacing={2}>
       {onlyView || (

@@ -1,9 +1,6 @@
 import { Button, Grid, InputBase, Typography } from "@mui/material";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
-import api from "~/apis/backend/api";
-import { queryKey } from "~/apis/backend/queryKey";
-import { useUser } from "~/hooks/UserContext/helper";
+import { useTaskUpdateMutation } from "~/apis/backend/mutation";
 
 type Prop = {
   title: string;
@@ -14,22 +11,8 @@ type Prop = {
 const TaskTitleForm = ({ title, taskId, onlyView }: Prop) => {
   const [input, setInput] = useState(title);
   const [isEditing, setIsEditing] = useState(false);
-  const user = useUser();
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationKey: ["updateTask", user.company.id, taskId],
-    mutationFn: () => {
-      return api.updateTask(user.company.id, taskId, {
-        title: input,
-      });
-    },
-    onSuccess: () => {
-      setIsEditing(false);
-      queryClient.invalidateQueries({
-        queryKey: queryKey.task(user.company.id, taskId),
-      });
-    },
+  const taskUpdateMutation = useTaskUpdateMutation({
+    taskId,
   });
 
   const updateTitle = useCallback(() => {
@@ -37,8 +20,9 @@ const TaskTitleForm = ({ title, taskId, onlyView }: Prop) => {
       alert("タイトルを１文字以上入力してください");
       return;
     }
-    mutation.mutate();
-  }, [input, mutation]);
+    taskUpdateMutation.mutate({ taskKey: "title", value: input });
+    setIsEditing(false);
+  }, [input, taskUpdateMutation]);
   return (
     <Grid item container alignItems="center" spacing={2}>
       {isEditing ? (
