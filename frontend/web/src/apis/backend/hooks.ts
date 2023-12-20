@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "./api";
+import { taskQueryKey } from "./queryKey";
 
 export const useSearchTasksQuery = (
   companyId: string,
@@ -24,7 +25,7 @@ export const useSearchTasksQuery = (
 
 export const useTaskQuery = (companyId: string, taskId: string) =>
   useQuery({
-    queryKey: ["task", companyId, taskId],
+    queryKey: taskQueryKey.detail(companyId, taskId),
     queryFn: async ({ queryKey }) => {
       const [, companyId, taskId] = queryKey;
       const { data } = await api.getTask(companyId, taskId);
