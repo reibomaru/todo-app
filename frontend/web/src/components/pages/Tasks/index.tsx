@@ -5,20 +5,20 @@ import {
   Pagination,
   SelectChangeEvent,
 } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
 import { ChangeEvent, useCallback, useMemo } from "react";
-import { useLocation } from "react-router-dom";
-import api from "~/apis/backend/api";
+import { useLocation, useParams } from "react-router-dom";
 import { Task } from "~/apis/backend/gen";
 import HeaderLayout from "~/components/organisms/HeaderLayout";
 import TaskItemSelect from "~/components/organisms/TaskItemSelect";
 import TaskTable from "~/components/organisms/TaskTable";
 import { useUser } from "~/hooks/UserContext/helper";
 import { useUpdateQueryParam } from "~/hooks/navigate";
+import { useSearchTask } from "./useSearchTask";
 
 const Tasks = () => {
   const location = useLocation();
   const updateQueryParam = useUpdateQueryParam();
+  const { companyId } = useParams();
   const currParams = useMemo(() => {
     const params = new URLSearchParams(location.search);
     const assignee = params.get("assignee") || "";
@@ -30,26 +30,13 @@ const Tasks = () => {
   }, [location.search]);
   const user = useUser();
 
-  const { isSuccess, data } = useQuery({
-    queryKey: [
-      "searchTask",
-      user.company.id,
-      currParams.assignee,
-      currParams.status,
-      currParams.sort,
-      currParams.page,
-    ],
-    queryFn: async () => {
-      const { data } = await api.searchTask(
-        user.company.id,
-        currParams.assignee,
-        currParams.status,
-        currParams.sort,
-        currParams.page,
-      );
-      return data;
-    },
-  });
+  const { isSuccess, data } = useSearchTask(
+    companyId || "",
+    currParams.assignee,
+    currParams.status,
+    currParams.sort,
+    currParams.page,
+  );
 
   const handleHeaderClick = useCallback(
     (key: keyof Task) => {

@@ -2,6 +2,7 @@ import { Button, Grid, InputBase, Typography } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import api from "~/apis/backend/api";
+import { taskQueryKey } from "~/apis/backend/queryKey";
 import { useUser } from "~/hooks/UserContext/helper";
 
 type Prop = {
@@ -26,7 +27,7 @@ const TaskTitleForm = ({ title, taskId, onlyView }: Prop) => {
     onSuccess: () => {
       setIsEditing(false);
       queryClient.invalidateQueries({
-        queryKey: ["task", user.company.id, taskId],
+        queryKey: taskQueryKey.detail(user.company.id, taskId),
       });
     },
   });

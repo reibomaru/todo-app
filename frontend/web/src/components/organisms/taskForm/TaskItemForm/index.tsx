@@ -7,6 +7,7 @@ import { useUser } from "~/hooks/UserContext/helper";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { taskQueryKey } from "~/apis/backend/queryKey";
 
 type Props = {
   taskId: string;
@@ -45,7 +46,7 @@ const TaskItemForm = ({
     onSuccess: () => {
       setIsEditing(false);
       queryClient.invalidateQueries({
-        queryKey: ["task", user.company.id, taskId],
+        queryKey: taskQueryKey.detail(user.company.id, taskId),
       });
     },
   });

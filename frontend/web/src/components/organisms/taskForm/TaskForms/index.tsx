@@ -8,7 +8,9 @@ import { useUser } from "~/hooks/UserContext/helper";
 import api, { publicationRangeDisplay } from "~/apis/backend/api";
 import { useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTask } from "./useTask";
+import { taskQueryKey } from "~/apis/backend/queryKey";
 
 type Props = {
   onlyView: boolean;
@@ -20,17 +22,7 @@ const TaskForms = ({ onlyView }: Props) => {
   const { companyId, taskId } = useParams();
   const queryClient = useQueryClient();
 
-  const { status, data: task } = useQuery({
-    queryKey: ["task", companyId, taskId],
-    queryFn: async ({ queryKey }) => {
-      const [, companyId, taskId] = queryKey;
-      if (!companyId || !taskId) {
-        throw new Error("不適切なidです");
-      }
-      const { data } = await api.getTask(companyId, taskId);
-      return data;
-    },
-  });
+  const { status, data: task } = useTask(companyId, taskId);
 
   const mutation = useMutation({
     mutationKey: ["deleteTask", user.company.id, taskId],
@@ -46,9 +38,9 @@ const TaskForms = ({ onlyView }: Props) => {
       }
       return api.deleteTask(companyId, taskId);
     },
-    onSuccess: () => {
+    onSuccess: (_, { companyId = "", taskId = "" }) => {
       queryClient.invalidateQueries({
-        queryKey: ["task", user.company.id, taskId],
+        queryKey: taskQueryKey.detail(companyId, taskId),
       });
     },
   });
