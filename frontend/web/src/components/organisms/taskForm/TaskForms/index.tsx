@@ -10,7 +10,7 @@ import { useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTask } from "./useTask";
-import { taskQueryKey } from "~/apis/backend/queryKey";
+import { queryKey } from "~/apis/backend/queryKey";
 
 type Props = {
   onlyView: boolean;
@@ -40,7 +40,7 @@ const TaskForms = ({ onlyView }: Props) => {
     },
     onSuccess: (_, { companyId = "", taskId = "" }) => {
       queryClient.invalidateQueries({
-        queryKey: taskQueryKey.detail(companyId, taskId),
+        queryKey: queryKey.task(companyId, taskId),
       });
     },
   });

@@ -4,7 +4,7 @@ import api from "~/apis/backend/api";
 import { useUser } from "~/hooks/UserContext/helper";
 import TextareaAutosize from "react-textarea-autosize";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { taskQueryKey } from "~/apis/backend/queryKey";
+import { queryKey } from "~/apis/backend/queryKey";
 
 type Props = {
   description: string;
@@ -36,7 +36,7 @@ const TaskContentForm = ({ description, taskId, onlyView }: Props) => {
     onSuccess: () => {
       setIsEditing(false);
       queryClient.invalidateQueries({
-        queryKey: taskQueryKey.detail(user.company.id, taskId),
+        queryKey: queryKey.task(user.company.id, taskId),
       });
     },
   });
