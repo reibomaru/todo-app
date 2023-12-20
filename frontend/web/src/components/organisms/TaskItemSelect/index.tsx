@@ -22,7 +22,7 @@ type Props = SelectProps<string> & {
 
 const fetchOptions = async (
   companyId: string,
-  type: SelectType
+  type: SelectType,
 ): Promise<Option[]> => {
   switch (type) {
     case "members":

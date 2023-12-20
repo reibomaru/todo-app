@@ -31,7 +31,7 @@ const SignIn = () => {
         return { ...prev, [event.target.name]: event.target.value };
       });
     },
-    []
+    [],
   );
 
   const signInWithPassword = useCallback(async () => {

@@ -6,7 +6,7 @@ type OptionalUserContext = {
   optionalUser: User | null;
 };
 export const optionalUserContext = createContext<OptionalUserContext>(
-  {} as OptionalUserContext
+  {} as OptionalUserContext,
 );
 export const useOptionalUser = () => {
   return useContext(optionalUserContext);
