@@ -6,6 +6,7 @@ import api from "~/apis/backend/api";
 import { useUser } from "~/hooks/UserContext/helper";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type Props = {
   taskId: string;
@@ -14,7 +15,6 @@ type Props = {
   value: string;
   itemKey: keyof TaskRequestBody;
   onlyView: boolean;
-  onUpdateForm?: () => void | Promise<void>;
 };
 
 const TaskItemForm = ({
@@ -24,26 +24,43 @@ const TaskItemForm = ({
   value,
   itemKey,
   onlyView,
-  onUpdateForm = () => {},
 }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const user = useUser();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationKey: ["updateTask", user.company.id, taskId],
+    mutationFn: ({
+      itemKey,
+      value,
+    }: {
+      itemKey: keyof TaskRequestBody;
+      value: string;
+    }) => {
+      return api.updateTask(user.company.id, taskId, {
+        [itemKey]: value,
+      });
+    },
+    onSuccess: () => {
+      setIsEditing(false);
+      queryClient.invalidateQueries({
+        queryKey: ["task", user.company.id, taskId],
+      });
+    },
+  });
 
   const udpateTaskItem = useCallback(
     (itemKey: keyof TaskRequestBody) => {
       return async (
         event:
           | SelectChangeEvent<string>
-          | ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+          | ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
       ) => {
-        await api.updateTask(user.company.id, taskId, {
-          [itemKey]: event.target.value,
-        });
-        setIsEditing(false);
-        await onUpdateForm();
+        mutation.mutate({ itemKey, value: event.target.value });
       };
     },
-    [onUpdateForm, taskId, user.company.id]
+    [mutation],
   );
 
   const udpateTaskDateItem = useCallback(
@@ -52,14 +69,10 @@ const TaskItemForm = ({
         if (!value) {
           return;
         }
-        await api.updateTask(user.company.id, taskId, {
-          [itemKey]: value?.format("YYYY-MM-DD"),
-        });
-        setIsEditing(false);
-        await onUpdateForm();
+        mutation.mutate({ itemKey, value: value?.format("YYYY-MM-DD") });
       };
     },
-    [onUpdateForm, taskId, user.company.id]
+    [mutation],
   );
 
   const formContent = useMemo(() => {
