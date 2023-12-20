@@ -9,11 +9,12 @@ import { ChangeEvent, useCallback, useMemo } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { Task } from "~/apis/backend/gen";
 import HeaderLayout from "~/components/organisms/HeaderLayout";
-import TaskItemSelect from "~/components/organisms/TaskItemSelect";
 import TaskTable from "~/components/organisms/TaskTable";
 import { useUser } from "~/hooks/UserContext/helper";
 import { useUpdateQueryParam } from "~/hooks/navigate";
 import { useSearchTask } from "./useSearchTask";
+import MembersSelect from "~/components/organisms/MembersSelect";
+import TaskStatusSelect from "~/components/organisms/TaskStatusSelect";
 
 const Tasks = () => {
   const location = useLocation();
@@ -72,29 +73,31 @@ const Tasks = () => {
         <Grid item container spacing={2}>
           <Grid item>
             <InputLabel>担当者</InputLabel>
-            <TaskItemSelect
+            <MembersSelect
               value={currParams.assignee}
               name="assignee"
               onChange={handleChangeFilterOption}
               displayEmpty
               sx={{ minWidth: 150 }}
+              companyId={companyId || ""}
               selectType="members"
             >
               <MenuItem value="">指定しない</MenuItem>
-            </TaskItemSelect>
+            </MembersSelect>
           </Grid>
           <Grid item>
             <InputLabel>ステータス</InputLabel>
-            <TaskItemSelect
+            <TaskStatusSelect
               value={currParams.status}
               name="status"
               onChange={handleChangeFilterOption}
               displayEmpty
               sx={{ minWidth: 150 }}
-              selectType="status"
+              companyId={companyId || ""}
+              selectType="taskStatus"
             >
               <MenuItem value="">指定しない</MenuItem>
-            </TaskItemSelect>
+            </TaskStatusSelect>
           </Grid>
         </Grid>
         <Grid item>

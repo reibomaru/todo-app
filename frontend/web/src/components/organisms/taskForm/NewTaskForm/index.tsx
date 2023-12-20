@@ -13,8 +13,10 @@ import { ChangeEvent, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "~/apis/backend/api";
 import { TaskPublicationRangeEnum, TaskRequestBody } from "~/apis/backend/gen";
-import TaskItemSelect from "~/components/organisms/TaskItemSelect";
 import { useUser } from "~/hooks/UserContext/helper";
+import MembersSelect from "../../MembersSelect";
+import TaskStatusSelect from "../../TaskStatusSelect";
+import PublicationRangeSelect from "~/components/organisms/PublicationRangeSelect";
 
 const isValidForm = (form: TaskRequestBody) => {
   if (
@@ -125,7 +127,7 @@ const NewTaskForm = () => {
               </Typography>
             </Grid>
             <Grid item>
-              <TaskItemSelect
+              <MembersSelect
                 value={form.assigneeId}
                 name="assigneeId"
                 onChange={(event) => {
@@ -135,6 +137,7 @@ const NewTaskForm = () => {
                   }));
                 }}
                 displayEmpty
+                companyId={user.company.id}
                 selectType="memberIds"
               />
             </Grid>
@@ -146,7 +149,7 @@ const NewTaskForm = () => {
               </Typography>
             </Grid>
             <Grid item>
-              <TaskItemSelect
+              <TaskStatusSelect
                 value={form.statusId}
                 name="statusId"
                 onChange={(event) => {
@@ -156,11 +159,12 @@ const NewTaskForm = () => {
                   }));
                 }}
                 displayEmpty
-                selectType="statusIds"
+                selectType="taskStatusIds"
+                companyId={user.company.id}
                 error={form.statusId === ""}
               >
                 <MenuItem value="">未指定</MenuItem>
-              </TaskItemSelect>
+              </TaskStatusSelect>
               <FormHelperText>
                 {form.statusId === "" && "ステータスを指定してください"}
               </FormHelperText>
@@ -173,7 +177,7 @@ const NewTaskForm = () => {
               </Typography>
             </Grid>
             <Grid item>
-              <TaskItemSelect
+              <PublicationRangeSelect
                 value={form.publication_range}
                 name="publication_range"
                 onChange={(event) => {
@@ -184,7 +188,6 @@ const NewTaskForm = () => {
                   }));
                 }}
                 displayEmpty
-                selectType="publication_range"
               />
             </Grid>
           </Grid>

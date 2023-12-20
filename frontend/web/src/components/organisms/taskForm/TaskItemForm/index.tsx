@@ -1,13 +1,15 @@
 import { Button, Grid, SelectChangeEvent, Typography } from "@mui/material";
 import { ChangeEvent, ReactNode, useCallback, useMemo, useState } from "react";
 import { TaskRequestBody } from "~/apis/backend/gen";
-import TaskItemSelect from "~/components/organisms/TaskItemSelect";
 import api from "~/apis/backend/api";
 import { useUser } from "~/hooks/UserContext/helper";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { taskQueryKey } from "~/apis/backend/queryKey";
+import { queryKey } from "~/apis/backend/queryKey";
+import MembersSelect from "../../MembersSelect";
+import PublicationRangeSelect from "~/components/organisms/PublicationRangeSelect";
+import TaskStatusSelect from "../../TaskStatusSelect";
 
 type Props = {
   taskId: string;
@@ -46,7 +48,7 @@ const TaskItemForm = ({
     onSuccess: () => {
       setIsEditing(false);
       queryClient.invalidateQueries({
-        queryKey: taskQueryKey.detail(user.company.id, taskId),
+        queryKey: queryKey.task(user.company.id, taskId),
       });
     },
   });
@@ -80,35 +82,36 @@ const TaskItemForm = ({
     switch (itemKey) {
       case "assigneeId":
         return (
-          <TaskItemSelect
+          <MembersSelect
             value={value}
             defaultValue={value}
             name="assignee"
             onChange={udpateTaskItem(itemKey)}
             displayEmpty
+            companyId={user.company.id}
             selectType="memberIds"
           />
         );
       case "publication_range":
         return (
-          <TaskItemSelect
+          <PublicationRangeSelect
             value={value}
             defaultValue={value}
             name={itemKey}
             onChange={udpateTaskItem(itemKey)}
             displayEmpty
-            selectType="publication_range"
           />
         );
       case "statusId":
         return (
-          <TaskItemSelect
+          <TaskStatusSelect
             value={value}
             defaultValue={value}
             name={itemKey}
             onChange={udpateTaskItem(itemKey)}
             displayEmpty
-            selectType="statusIds"
+            companyId={user.company.id}
+            selectType="taskStatusIds"
           />
         );
       case "due":
@@ -121,7 +124,7 @@ const TaskItemForm = ({
           />
         );
     }
-  }, [itemKey, udpateTaskDateItem, udpateTaskItem, value]);
+  }, [itemKey, udpateTaskDateItem, udpateTaskItem, user.company.id, value]);
   return (
     <Grid item container direction="column" spacing={0.5}>
       <Grid item container alignItems="center">
