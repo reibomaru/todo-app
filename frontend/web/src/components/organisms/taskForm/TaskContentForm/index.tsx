@@ -27,7 +27,7 @@ const TaskContentForm = ({ description, taskId, onlyView }: Props) => {
 
   const updateDescrption = useCallback(async () => {
     taskUpdateMutation.mutate({ taskKey: "description", value: input });
-    setIsEditing(false)
+    setIsEditing(false);
   }, [input, taskUpdateMutation]);
   return (
     <Grid item container direction="column" spacing={2}>

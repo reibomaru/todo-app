@@ -44,7 +44,7 @@ const TaskItemForm = ({
           taskKey: itemKey,
           value: event.target.value,
         });
-        setIsEditing(false)
+        setIsEditing(false);
       };
     },
     [taskUpdateMutation],
@@ -60,7 +60,7 @@ const TaskItemForm = ({
           taskKey: itemKey,
           value: value?.format("YYYY-MM-DD"),
         });
-        setIsEditing(false)
+        setIsEditing(false);
       };
     },
     [taskUpdateMutation],
