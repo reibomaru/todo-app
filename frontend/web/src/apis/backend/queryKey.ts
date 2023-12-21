@@ -3,11 +3,20 @@ export const queryKey = {
     ["task", taskId, companyId] as const,
   taskStatus: (companyId: string) => ["taskStatus", companyId] as const,
   members: (companyId: string) => ["members", companyId] as const,
+  allSearchTask: ["searchTask"] as const,
   searchTask: (
     companyId: string,
     assignee: string,
     status: string,
     sort: string,
     page: number,
-  ) => ["searchTask", companyId, assignee, status, sort, page] as const,
+  ) =>
+    [
+      ...queryKey.allSearchTask,
+      companyId,
+      assignee,
+      status,
+      sort,
+      page,
+    ] as const,
 };

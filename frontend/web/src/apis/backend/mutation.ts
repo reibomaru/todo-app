@@ -4,6 +4,22 @@ import { queryKey } from "./queryKey";
 import { TaskRequestBody } from "./gen";
 import { useUser } from "~/hooks/UserContext/helper";
 
+export const useTaskCreateMutation = () => {
+  const queryClient = useQueryClient();
+  const user = useUser();
+  return useMutation({
+    mutationKey: ["createTask"],
+    mutationFn: (form: TaskRequestBody) => {
+      return api.createTask(user.company.id, form);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKey.allSearchTask,
+      });
+    },
+  });
+};
+
 type TaskUpdateMutation = {
   taskId: string;
 };
