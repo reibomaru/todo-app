@@ -1,20 +1,20 @@
 import { ReactNode } from "react";
 import { userContext } from "./helper";
 import { Link } from "react-router-dom";
-import { useOptionalUser } from "~/hooks/OptionalUserContext/helper";
 import HeaderLayout from "~/components/organisms/HeaderLayout";
 import { Grid } from "@mui/material";
+import { useUserQuery } from "~/apis/backend/query";
 
 type Props = {
   children: ReactNode;
 };
 
 const UserProvider = ({ children }: Props) => {
-  const { optionalUser: optUser } = useOptionalUser();
+  const { data: user } = useUserQuery();
   return (
     <>
-      {optUser ? (
-        <userContext.Provider value={optUser}>{children}</userContext.Provider>
+      {user ? (
+        <userContext.Provider value={user}>{children}</userContext.Provider>
       ) : (
         <HeaderLayout>
           <Grid sx={{ padding: 5 }}>

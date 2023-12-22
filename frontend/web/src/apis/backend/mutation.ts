@@ -3,6 +3,42 @@ import api from "./api";
 import { queryKey } from "./queryKey";
 import { TaskRequestBody } from "./gen";
 import { useUser } from "~/hooks/UserContext/helper";
+import sha256 from "crypto-js/sha256";
+
+type SignInMutationFnArg = {
+  email: string;
+  password: string;
+};
+export const useSignInMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ email, password }: SignInMutationFnArg) => {
+      return api.signIn({
+        email: email,
+        password: sha256(password).toString(),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKey.user,
+      });
+    },
+  });
+};
+
+export const useSignOutMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => {
+      return api.signOut();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKey.user,
+      });
+    },
+  });
+};
 
 export const useTaskCreateMutation = () => {
   const queryClient = useQueryClient();

@@ -2,6 +2,18 @@ import { useQuery } from "@tanstack/react-query";
 import api from "./api";
 import { queryKey } from "./queryKey";
 
+export const useUserQuery = () =>
+  useQuery({
+    queryKey: queryKey.user,
+    queryFn: async () => {
+      const { data } = await api.getMyAccount();
+      return data;
+    },
+    retry: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+  });
+
 export const useSearchTasksQuery = (
   companyId: string,
   assignee: string,

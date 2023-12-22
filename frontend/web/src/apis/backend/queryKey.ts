@@ -1,4 +1,5 @@
 export const queryKey = {
+  user: ["user"],
   task: (taskId: string, companyId: string) =>
     ["task", taskId, companyId] as const,
   taskStatus: (companyId: string) => ["taskStatus", companyId] as const,
