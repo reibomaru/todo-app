@@ -5,11 +5,9 @@ export const useTaskStatus = (
   selectType: TaskStatusSelectTypeEnum,
   companyId: string,
 ) => {
-  const { status, data: taskStatusList } = useTaskStatusQuery(companyId);
+  const { data: taskStatusList } = useTaskStatusQuery(companyId);
 
-  if (status !== "success") {
-    return [];
-  } else if (selectType === "taskStatusIds") {
+  if (selectType === "taskStatusIds") {
     return taskStatusList.map((status) => ({
       label: status.name,
       value: status.id,

@@ -19,7 +19,7 @@ const TaskForms = ({ onlyView }: Props) => {
   const user = useUser();
   const navigate = useNavigate();
   const { companyId, taskId } = useParams();
-  const { status, data: task } = useTask(companyId, taskId);
+  const { data: task } = useTask(companyId, taskId);
 
   const taskDeleteMutation = useTaskDeleteMutation({ taskId: taskId || "" });
 
@@ -31,20 +31,6 @@ const TaskForms = ({ onlyView }: Props) => {
     taskDeleteMutation.mutate();
     navigate(`/${user.company.id}/tasks`);
   }, [navigate, taskDeleteMutation, user.company.id]);
-
-  if (status === "pending") {
-    return (
-      <Grid container direction="column">
-        🌀ローディング中
-      </Grid>
-    );
-  } else if (status === "error") {
-    return (
-      <Grid container direction="column">
-        ❌データの取得中にエラー
-      </Grid>
-    );
-  }
 
   return (
     <Grid container direction="column">

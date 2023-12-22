@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import api from "./api";
 import { queryKey } from "./queryKey";
 
@@ -21,7 +21,7 @@ export const useSearchTasksQuery = (
   sort: string,
   page: number,
 ) =>
-  useQuery({
+  useSuspenseQuery({
     queryKey: queryKey.searchTask(companyId, assignee, status, sort, page),
     queryFn: async () => {
       const { data } = await api.searchTask(
@@ -36,7 +36,7 @@ export const useSearchTasksQuery = (
   });
 
 export const useTaskQuery = (companyId: string, taskId: string) =>
-  useQuery({
+  useSuspenseQuery({
     queryKey: queryKey.task(companyId, taskId),
     queryFn: async ({ queryKey }) => {
       const [, companyId, taskId] = queryKey;
@@ -46,7 +46,7 @@ export const useTaskQuery = (companyId: string, taskId: string) =>
   });
 
 export const useTaskStatusQuery = (companyId: string) =>
-  useQuery({
+  useSuspenseQuery({
     queryKey: queryKey.taskStatus(companyId),
     queryFn: async ({ queryKey }) => {
       const [, companyId] = queryKey;
@@ -58,7 +58,7 @@ export const useTaskStatusQuery = (companyId: string) =>
   });
 
 export const useMembersQuery = (companyId: string) =>
-  useQuery({
+  useSuspenseQuery({
     queryKey: queryKey.members(companyId),
     queryFn: async ({ queryKey }) => {
       const [, companyId] = queryKey;

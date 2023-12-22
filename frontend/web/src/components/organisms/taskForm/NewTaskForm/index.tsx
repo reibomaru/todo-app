@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, Suspense, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { TaskPublicationRangeEnum, TaskRequestBody } from "~/apis/backend/gen";
 import { useUser } from "~/hooks/UserContext/helper";
@@ -127,19 +127,21 @@ const NewTaskForm = () => {
               </Typography>
             </Grid>
             <Grid item>
-              <MembersSelect
-                value={form.assigneeId}
-                name="assigneeId"
-                onChange={(event) => {
-                  setForm((prev) => ({
-                    ...prev,
-                    assigneeId: event.target.value,
-                  }));
-                }}
-                displayEmpty
-                companyId={user.company.id}
-                selectType="memberIds"
-              />
+              <Suspense fallback={<p>🌀Loading...</p>}>
+                <MembersSelect
+                  value={form.assigneeId}
+                  name="assigneeId"
+                  onChange={(event) => {
+                    setForm((prev) => ({
+                      ...prev,
+                      assigneeId: event.target.value,
+                    }));
+                  }}
+                  displayEmpty
+                  companyId={user.company.id}
+                  selectType="memberIds"
+                />
+              </Suspense>
             </Grid>
           </Grid>
           <Grid item container direction="column" spacing={0.5}>
@@ -149,22 +151,24 @@ const NewTaskForm = () => {
               </Typography>
             </Grid>
             <Grid item>
-              <TaskStatusSelect
-                value={form.statusId}
-                name="statusId"
-                onChange={(event) => {
-                  setForm((prev) => ({
-                    ...prev,
-                    statusId: event.target.value,
-                  }));
-                }}
-                displayEmpty
-                selectType="taskStatusIds"
-                companyId={user.company.id}
-                error={form.statusId === ""}
-              >
-                <MenuItem value="">未指定</MenuItem>
-              </TaskStatusSelect>
+              <Suspense fallback={<p>🌀Loading...</p>}>
+                <TaskStatusSelect
+                  value={form.statusId}
+                  name="statusId"
+                  onChange={(event) => {
+                    setForm((prev) => ({
+                      ...prev,
+                      statusId: event.target.value,
+                    }));
+                  }}
+                  displayEmpty
+                  selectType="taskStatusIds"
+                  companyId={user.company.id}
+                  error={form.statusId === ""}
+                >
+                  <MenuItem value="">未指定</MenuItem>
+                </TaskStatusSelect>
+              </Suspense>
               <FormHelperText>
                 {form.statusId === "" && "ステータスを指定してください"}
               </FormHelperText>
