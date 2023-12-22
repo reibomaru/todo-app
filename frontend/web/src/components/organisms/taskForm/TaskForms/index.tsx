@@ -3,37 +3,55 @@ import TaskItem from "~/components/organisms/TaskItem";
 import TaskTitleForm from "~/components/organisms/taskForm/TaskTitleForm";
 import TaskContentForm from "~/components/organisms/taskForm/TaskContentForm";
 import TaskItemForm from "~/components/organisms/taskForm/TaskItemForm";
-import { Task } from "~/apis/backend/gen";
 import dayjs from "dayjs";
 import { useUser } from "~/hooks/UserContext/helper";
-import api, { publicationRangeDisplay } from "~/apis/backend/api";
+import { publicationRangeDisplay } from "~/apis/backend/api";
 import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useTask } from "./useTask";
+import { useTaskDeleteMutation } from "~/apis/backend/mutation";
 
 type Props = {
-  task: Task;
-  fetchTask: () => void | Promise<void>;
   onlyView: boolean;
 };
 
-const TaskForms = ({ task, fetchTask, onlyView }: Props) => {
+const TaskForms = ({ onlyView }: Props) => {
   const user = useUser();
   const navigate = useNavigate();
+  const { companyId, taskId } = useParams();
+  const { status, data: task } = useTask(companyId, taskId);
+
+  const taskDeleteMutation = useTaskDeleteMutation({ taskId: taskId || "" });
+
   const deleteTask = useCallback(async () => {
     const ok = confirm("本当にタスクを削除しますか?");
     if (!ok) {
       return;
     }
-    api.deleteTask(user.company.id, task.id);
+    taskDeleteMutation.mutate();
     navigate(`/${user.company.id}/tasks`);
-  }, [navigate, task.id, user.company.id]);
+  }, [navigate, taskDeleteMutation, user.company.id]);
+
+  if (status === "pending") {
+    return (
+      <Grid container direction="column">
+        🌀ローディング中
+      </Grid>
+    );
+  } else if (status === "error") {
+    return (
+      <Grid container direction="column">
+        ❌データの取得中にエラー
+      </Grid>
+    );
+  }
+
   return (
     <Grid container direction="column">
       <Grid item>
         <TaskTitleForm
           title={task.title}
           taskId={task.id}
-          onUpdateForm={fetchTask}
           onlyView={onlyView}
         />
         <hr />
@@ -43,7 +61,6 @@ const TaskForms = ({ task, fetchTask, onlyView }: Props) => {
           <TaskContentForm
             description={task.description}
             taskId={task.id}
-            onUpdateForm={fetchTask}
             onlyView={onlyView}
           />
         </Grid>
@@ -54,7 +71,6 @@ const TaskForms = ({ task, fetchTask, onlyView }: Props) => {
             label="期限"
             value={task.due}
             displayValue={task.due}
-            onUpdateForm={fetchTask}
             onlyView={onlyView}
           />
           <TaskItemForm
@@ -63,7 +79,6 @@ const TaskForms = ({ task, fetchTask, onlyView }: Props) => {
             label="担当者"
             displayValue={task.assignee.name}
             value={task.assignee.id}
-            onUpdateForm={fetchTask}
             onlyView={onlyView}
           />
           <TaskItemForm
@@ -72,7 +87,6 @@ const TaskForms = ({ task, fetchTask, onlyView }: Props) => {
             label="ステータス"
             displayValue={<Chip label={task.status.name} />}
             value={task.status.id}
-            onUpdateForm={fetchTask}
             onlyView={onlyView}
           />
           <TaskItemForm
@@ -81,7 +95,6 @@ const TaskForms = ({ task, fetchTask, onlyView }: Props) => {
             label="公開範囲"
             displayValue={publicationRangeDisplay[task.publication_range]}
             value={task.publication_range}
-            onUpdateForm={fetchTask}
             onlyView={onlyView && user.id !== task.author.id}
           />
           <TaskItem label="作成者" displayValue={task.author.name} />

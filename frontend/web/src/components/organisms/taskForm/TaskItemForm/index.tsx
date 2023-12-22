@@ -1,11 +1,13 @@
 import { Button, Grid, SelectChangeEvent, Typography } from "@mui/material";
 import { ChangeEvent, ReactNode, useCallback, useMemo, useState } from "react";
 import { TaskRequestBody } from "~/apis/backend/gen";
-import TaskItemSelect from "~/components/organisms/TaskItemSelect";
-import api from "~/apis/backend/api";
 import { useUser } from "~/hooks/UserContext/helper";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import MembersSelect from "../../MembersSelect";
+import PublicationRangeSelect from "~/components/organisms/PublicationRangeSelect";
+import TaskStatusSelect from "../../TaskStatusSelect";
+import { useTaskUpdateMutation } from "~/apis/backend/mutation";
 
 type Props = {
   taskId: string;
@@ -14,7 +16,6 @@ type Props = {
   value: string;
   itemKey: keyof TaskRequestBody;
   onlyView: boolean;
-  onUpdateForm?: () => void | Promise<void>;
 };
 
 const TaskItemForm = ({
@@ -24,26 +25,29 @@ const TaskItemForm = ({
   value,
   itemKey,
   onlyView,
-  onUpdateForm = () => {},
 }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const user = useUser();
+
+  const taskUpdateMutation = useTaskUpdateMutation({
+    taskId,
+  });
 
   const udpateTaskItem = useCallback(
     (itemKey: keyof TaskRequestBody) => {
       return async (
         event:
           | SelectChangeEvent<string>
-          | ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+          | ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
       ) => {
-        await api.updateTask(user.company.id, taskId, {
-          [itemKey]: event.target.value,
+        taskUpdateMutation.mutate({
+          taskKey: itemKey,
+          value: event.target.value,
         });
         setIsEditing(false);
-        await onUpdateForm();
       };
     },
-    [onUpdateForm, taskId, user.company.id]
+    [taskUpdateMutation],
   );
 
   const udpateTaskDateItem = useCallback(
@@ -52,49 +56,50 @@ const TaskItemForm = ({
         if (!value) {
           return;
         }
-        await api.updateTask(user.company.id, taskId, {
-          [itemKey]: value?.format("YYYY-MM-DD"),
+        taskUpdateMutation.mutate({
+          taskKey: itemKey,
+          value: value?.format("YYYY-MM-DD"),
         });
         setIsEditing(false);
-        await onUpdateForm();
       };
     },
-    [onUpdateForm, taskId, user.company.id]
+    [taskUpdateMutation],
   );
 
   const formContent = useMemo(() => {
     switch (itemKey) {
       case "assigneeId":
         return (
-          <TaskItemSelect
+          <MembersSelect
             value={value}
             defaultValue={value}
             name="assignee"
             onChange={udpateTaskItem(itemKey)}
             displayEmpty
+            companyId={user.company.id}
             selectType="memberIds"
           />
         );
       case "publication_range":
         return (
-          <TaskItemSelect
+          <PublicationRangeSelect
             value={value}
             defaultValue={value}
             name={itemKey}
             onChange={udpateTaskItem(itemKey)}
             displayEmpty
-            selectType="publication_range"
           />
         );
       case "statusId":
         return (
-          <TaskItemSelect
+          <TaskStatusSelect
             value={value}
             defaultValue={value}
             name={itemKey}
             onChange={udpateTaskItem(itemKey)}
             displayEmpty
-            selectType="statusIds"
+            companyId={user.company.id}
+            selectType="taskStatusIds"
           />
         );
       case "due":
@@ -107,7 +112,7 @@ const TaskItemForm = ({
           />
         );
     }
-  }, [itemKey, udpateTaskDateItem, udpateTaskItem, value]);
+  }, [itemKey, udpateTaskDateItem, udpateTaskItem, user.company.id, value]);
   return (
     <Grid item container direction="column" spacing={0.5}>
       <Grid item container alignItems="center">

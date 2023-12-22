@@ -1,31 +1,28 @@
 import { Button, Grid, InputBase, Typography } from "@mui/material";
 import { useCallback, useState } from "react";
-import api from "~/apis/backend/api";
-import { useUser } from "~/hooks/UserContext/helper";
+import { useTaskUpdateMutation } from "~/apis/backend/mutation";
 
 type Prop = {
   title: string;
   taskId: string;
   onlyView: boolean;
-  onUpdateForm: () => Promise<void> | void;
 };
 
-const TaskTitleForm = ({ title, taskId, onUpdateForm, onlyView }: Prop) => {
+const TaskTitleForm = ({ title, taskId, onlyView }: Prop) => {
   const [input, setInput] = useState(title);
   const [isEditing, setIsEditing] = useState(false);
-  const user = useUser();
+  const taskUpdateMutation = useTaskUpdateMutation({
+    taskId,
+  });
 
-  const updateTitle = useCallback(async () => {
+  const updateTitle = useCallback(() => {
     if (input === "") {
       alert("タイトルを１文字以上入力してください");
       return;
     }
-    await api.updateTask(user.company.id, taskId, {
-      title: input,
-    });
+    taskUpdateMutation.mutate({ taskKey: "title", value: input });
     setIsEditing(false);
-    await onUpdateForm();
-  }, [input, onUpdateForm, taskId, user.company.id]);
+  }, [input, taskUpdateMutation]);
   return (
     <Grid item container alignItems="center" spacing={2}>
       {isEditing ? (

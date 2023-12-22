@@ -1,27 +1,19 @@
 import { Button, Grid, Typography } from "@mui/material";
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
-import api from "~/apis/backend/api";
-import { useUser } from "~/hooks/UserContext/helper";
 import TextareaAutosize from "react-textarea-autosize";
+import { useTaskUpdateMutation } from "~/apis/backend/mutation";
 
 type Props = {
   description: string;
   taskId: string;
   onlyView: boolean;
-  onUpdateForm: () => Promise<void> | void;
 };
 
-const TaskContentForm = ({
-  description,
-  taskId,
-  onUpdateForm,
-  onlyView,
-}: Props) => {
+const TaskContentForm = ({ description, taskId, onlyView }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [input, setInput] = useState(description);
   const [typographyClassName, setTypographyClassName] = useState("");
   const ref = useRef<HTMLHeadingElement>(null);
-  const user = useUser();
 
   useEffect(() => {
     if (ref.current) {
@@ -29,13 +21,14 @@ const TaskContentForm = ({
     }
   }, [ref]);
 
+  const taskUpdateMutation = useTaskUpdateMutation({
+    taskId,
+  });
+
   const updateDescrption = useCallback(async () => {
-    await api.updateTask(user.company.id, taskId, {
-      description: input,
-    });
+    taskUpdateMutation.mutate({ taskKey: "description", value: input });
     setIsEditing(false);
-    await onUpdateForm();
-  }, [input, onUpdateForm, taskId, user.company.id]);
+  }, [input, taskUpdateMutation]);
   return (
     <Grid item container direction="column" spacing={2}>
       {onlyView || (

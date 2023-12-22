@@ -1,16 +1,17 @@
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
-import api, { validateSignInRequestBody } from "~/apis/backend/api";
+import { validateSignInRequestBody } from "~/apis/backend/api";
 import { SignInRequestBody } from "~/apis/backend/gen";
 import HeaderLayout from "~/components/organisms/HeaderLayout";
-import sha256 from "crypto-js/sha256";
-import { useOptionalUser } from "~/hooks/OptionalUserContext/helper";
+import { useSignInMutation } from "~/apis/backend/mutation";
 
 const SignIn = () => {
   const [form, setForm] = useState<SignInRequestBody>({
     email: "",
     password: "",
   });
+  const signInMutation = useSignInMutation();
+
   const errorMessages = useMemo<SignInRequestBody>(() => {
     return validateSignInRequestBody(form);
   }, [form]);
@@ -23,7 +24,6 @@ const SignIn = () => {
     }
     return true;
   }, [errorMessages, form]);
-  const { fetchUser } = useOptionalUser();
 
   const onChangeForm = useCallback<React.ChangeEventHandler<HTMLInputElement>>(
     (event) => {
@@ -31,25 +31,17 @@ const SignIn = () => {
         return { ...prev, [event.target.name]: event.target.value };
       });
     },
-    []
+    [],
   );
 
-  const signInWithPassword = useCallback(async () => {
+  const signInWithPassword = useCallback(() => {
     if (!isValidForm) {
       alert("不正なフォームです");
       return;
     }
-    try {
-      await api.signIn({
-        email: form.email,
-        password: sha256(form.password).toString(),
-      });
-      await fetchUser();
-    } catch (error) {
-      alert("ログインに失敗しました");
-      return;
-    }
-  }, [fetchUser, form.email, form.password, isValidForm]);
+    const { email, password } = form;
+    signInMutation.mutate({ email, password });
+  }, [form, isValidForm, signInMutation]);
 
   return (
     <HeaderLayout>

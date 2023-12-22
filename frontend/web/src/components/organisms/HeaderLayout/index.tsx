@@ -1,26 +1,20 @@
 import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar, Button, Toolbar, Typography } from "@mui/material";
-import { useOptionalUser } from "~/hooks/OptionalUserContext/helper";
-import api from "~/apis/backend/api";
+import { useUserQuery } from "~/apis/backend/query";
+import { useSignOutMutation } from "~/apis/backend/mutation";
 
 type Props = {
   children: ReactNode;
 };
 
 const HeaderLayout = ({ children }: Props) => {
-  const { optionalUser: user, fetchUser } = useOptionalUser();
+  const { data: user } = useUserQuery();
+  const signOutMutation = useSignOutMutation();
   const navigate = useNavigate();
 
-  const signOut = async () => {
-    try {
-      await api.signOut();
-      await fetchUser();
-      navigate("/signin");
-    } catch (error) {
-      alert("サインアウトに失敗しました");
-      return;
-    }
+  const signOut = () => {
+    signOutMutation.mutate();
     navigate("/signin");
   };
   return (

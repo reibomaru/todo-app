@@ -5,19 +5,21 @@ import {
   Pagination,
   SelectChangeEvent,
 } from "@mui/material";
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
-import api from "~/apis/backend/api";
-import { SearchResult, Task } from "~/apis/backend/gen";
+import { ChangeEvent, useCallback, useMemo } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { Task } from "~/apis/backend/gen";
 import HeaderLayout from "~/components/organisms/HeaderLayout";
-import TaskItemSelect from "~/components/organisms/TaskItemSelect";
 import TaskTable from "~/components/organisms/TaskTable";
 import { useUser } from "~/hooks/UserContext/helper";
 import { useUpdateQueryParam } from "~/hooks/navigate";
+import { useSearchTask } from "./useSearchTask";
+import MembersSelect from "~/components/organisms/MembersSelect";
+import TaskStatusSelect from "~/components/organisms/TaskStatusSelect";
 
 const Tasks = () => {
   const location = useLocation();
   const updateQueryParam = useUpdateQueryParam();
+  const { companyId } = useParams();
   const currParams = useMemo(() => {
     const params = new URLSearchParams(location.search);
     const assignee = params.get("assignee") || "";
@@ -28,34 +30,14 @@ const Tasks = () => {
     return { assignee, status, sort, page };
   }, [location.search]);
   const user = useUser();
-  const [searchResult, setSearchResult] = useState<SearchResult>({
-    total_page_count: 0,
-    result: [],
-    page_size: 0,
-  });
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { data } = await api.searchTask(
-          user.company.id,
-          currParams.assignee,
-          currParams.status,
-          currParams.sort,
-          currParams.page
-        );
-        setSearchResult(data);
-      } catch (error) {
-        alert("データの取得に失敗しました");
-      }
-    })();
-  }, [
+  const { isSuccess, data } = useSearchTask(
+    companyId || "",
     currParams.assignee,
-    currParams.page,
-    currParams.sort,
     currParams.status,
-    user.company.id,
-  ]);
+    currParams.sort,
+    currParams.page,
+  );
 
   const handleHeaderClick = useCallback(
     (key: keyof Task) => {
@@ -68,7 +50,7 @@ const Tasks = () => {
         default:
       }
     },
-    [updateQueryParam]
+    [updateQueryParam],
   );
 
   const handleChangeFilterOption = (event: SelectChangeEvent<string>) => {
@@ -91,45 +73,51 @@ const Tasks = () => {
         <Grid item container spacing={2}>
           <Grid item>
             <InputLabel>担当者</InputLabel>
-            <TaskItemSelect
+            <MembersSelect
               value={currParams.assignee}
               name="assignee"
               onChange={handleChangeFilterOption}
               displayEmpty
               sx={{ minWidth: 150 }}
+              companyId={companyId || ""}
               selectType="members"
             >
               <MenuItem value="">指定しない</MenuItem>
-            </TaskItemSelect>
+            </MembersSelect>
           </Grid>
           <Grid item>
             <InputLabel>ステータス</InputLabel>
-            <TaskItemSelect
+            <TaskStatusSelect
               value={currParams.status}
               name="status"
               onChange={handleChangeFilterOption}
               displayEmpty
               sx={{ minWidth: 150 }}
-              selectType="status"
+              companyId={companyId || ""}
+              selectType="taskStatus"
             >
               <MenuItem value="">指定しない</MenuItem>
-            </TaskItemSelect>
+            </TaskStatusSelect>
           </Grid>
         </Grid>
         <Grid item>
-          <TaskTable
-            currentSortKey={currParams.sort || "created_at"}
-            tasks={searchResult.result}
-            onClickHeader={handleHeaderClick}
-          />
+          {isSuccess && (
+            <TaskTable
+              currentSortKey={currParams.sort || "created_at"}
+              tasks={data.result}
+              onClickHeader={handleHeaderClick}
+            />
+          )}
         </Grid>
         <Grid item container justifyContent="center">
-          <Pagination
-            sx={{ padding: 5 }}
-            count={searchResult.total_page_count}
-            page={currParams.page}
-            onChange={handleChangePage}
-          />
+          {isSuccess && (
+            <Pagination
+              sx={{ padding: 5 }}
+              count={data.total_page_count}
+              page={currParams.page}
+              onChange={handleChangePage}
+            />
+          )}
         </Grid>
       </Grid>
     </HeaderLayout>

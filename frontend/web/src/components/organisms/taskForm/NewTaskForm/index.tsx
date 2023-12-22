@@ -11,10 +11,12 @@ import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import { ChangeEvent, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "~/apis/backend/api";
 import { TaskPublicationRangeEnum, TaskRequestBody } from "~/apis/backend/gen";
-import TaskItemSelect from "~/components/organisms/TaskItemSelect";
 import { useUser } from "~/hooks/UserContext/helper";
+import MembersSelect from "../../MembersSelect";
+import TaskStatusSelect from "../../TaskStatusSelect";
+import PublicationRangeSelect from "~/components/organisms/PublicationRangeSelect";
+import { useTaskCreateMutation } from "~/apis/backend/mutation";
 
 const isValidForm = (form: TaskRequestBody) => {
   if (
@@ -41,19 +43,19 @@ const NewTaskForm = () => {
     publication_range: TaskPublicationRangeEnum.Company,
   });
   const navigate = useNavigate();
+  const taskCreateMutation = useTaskCreateMutation();
 
-  const createTask = useCallback(async () => {
+  const createTask = useCallback(() => {
     if (!isValidForm(form)) {
       alert("空の入力値があります。");
       return;
     }
-    try {
-      await api.createTask(user.company.id, form);
-      navigate(`/${user.company.id}/tasks`);
-    } catch (error) {
+    taskCreateMutation.mutate(form);
+    if (taskCreateMutation.isError) {
       alert("タスクの作成に失敗");
     }
-  }, [form, navigate, user.company.id]);
+    navigate(`/${user.company.id}/tasks`);
+  }, [form, navigate, taskCreateMutation, user.company.id]);
   return (
     <Grid container direction="column">
       <Grid item>
@@ -125,7 +127,7 @@ const NewTaskForm = () => {
               </Typography>
             </Grid>
             <Grid item>
-              <TaskItemSelect
+              <MembersSelect
                 value={form.assigneeId}
                 name="assigneeId"
                 onChange={(event) => {
@@ -135,6 +137,7 @@ const NewTaskForm = () => {
                   }));
                 }}
                 displayEmpty
+                companyId={user.company.id}
                 selectType="memberIds"
               />
             </Grid>
@@ -146,7 +149,7 @@ const NewTaskForm = () => {
               </Typography>
             </Grid>
             <Grid item>
-              <TaskItemSelect
+              <TaskStatusSelect
                 value={form.statusId}
                 name="statusId"
                 onChange={(event) => {
@@ -156,11 +159,12 @@ const NewTaskForm = () => {
                   }));
                 }}
                 displayEmpty
-                selectType="statusIds"
+                selectType="taskStatusIds"
+                companyId={user.company.id}
                 error={form.statusId === ""}
               >
                 <MenuItem value="">未指定</MenuItem>
-              </TaskItemSelect>
+              </TaskStatusSelect>
               <FormHelperText>
                 {form.statusId === "" && "ステータスを指定してください"}
               </FormHelperText>
@@ -173,7 +177,7 @@ const NewTaskForm = () => {
               </Typography>
             </Grid>
             <Grid item>
-              <TaskItemSelect
+              <PublicationRangeSelect
                 value={form.publication_range}
                 name="publication_range"
                 onChange={(event) => {
@@ -184,7 +188,6 @@ const NewTaskForm = () => {
                   }));
                 }}
                 displayEmpty
-                selectType="publication_range"
               />
             </Grid>
           </Grid>
